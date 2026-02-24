@@ -30,14 +30,9 @@ int mkstemp(char *);
 #define TEMPFILE        "/tmp/feXXXXXX"
 #define F_NONE          0
 #define F_CLEAR         1
-#define ID_DEFAULT         1
-#define ID_SYMBOL          2
-#define ID_MODELINE        3
-#define ID_DIGITS          4
-#define ID_LINE_COMMENT    5
-#define ID_BLOCK_COMMENT   6
-#define ID_DOUBLE_STRING   7
-#define ID_SINGLE_STRING   8
+#define ID_DEFAULT      1
+#define ID_COMMENT      2
+#define ID_MODELINE     3
 
 typedef unsigned char char_t;
 typedef long point_t;

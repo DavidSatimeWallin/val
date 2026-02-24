@@ -29,14 +29,8 @@ int main(int argc, char **argv)
 	idlok(stdscr, TRUE);
 
 	start_color();
-	init_pair(ID_DEFAULT, COLOR_CYAN, COLOR_BLACK);          /* alpha */
-	init_pair(ID_SYMBOL, COLOR_WHITE, COLOR_BLACK);          /* non alpha, non digit */
-	init_pair(ID_MODELINE, COLOR_BLACK, COLOR_WHITE);        /* modeline */
-	init_pair(ID_DIGITS, COLOR_YELLOW, COLOR_BLACK);         /* digits */
-	init_pair(ID_BLOCK_COMMENT, COLOR_GREEN, COLOR_BLACK);   /* block comments */
-	init_pair(ID_LINE_COMMENT, COLOR_GREEN, COLOR_BLACK);    /* line comments */
-	init_pair(ID_SINGLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* single quoted strings */
-	init_pair(ID_DOUBLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* double quoted strings */
+	init_pair(ID_MODELINE, COLOR_BLACK, COLOR_WHITE);
+	init_pair(ID_COMMENT, COLOR_BLUE, COLOR_BLACK);
 	
 	if (1 < argc) {
 		curbp = find_buffer(argv[1], TRUE);

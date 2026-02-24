@@ -88,7 +88,6 @@ void display(window_t *wp, int flag)
 	char_t *p;
 	int i, j, k, nch;
 	buffer_t *bp = wp->w_bufp;
-	int token_type = ID_DEFAULT;
 	
 	/* find start of screen, handle scroll up off page or top of file  */
 	/* point is always within b_page and b_epage */
@@ -139,8 +138,7 @@ void display(window_t *wp, int flag)
 				display_utf8(bp, *p, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				j += *p == '\t' ? 8-(j&7) : 1;
-				token_type = parse_text(bp, bp->b_epage);
-				attron(COLOR_PAIR(token_type));
+				attrset(parse_text(bp, bp->b_epage) == ID_COMMENT ? A_BOLD | COLOR_PAIR(ID_COMMENT) : A_NORMAL);
 				addch(*p);
 			} else {
 				const char *ctrl = unctrl(*p);
@@ -172,7 +170,7 @@ void display(window_t *wp, int flag)
 		refresh();
 	}
 	wp->w_update = FALSE;
-	attron(COLOR_PAIR(ID_SYMBOL));
+	attrset(A_NORMAL);
 }
 
 void display_utf8(buffer_t *bp, char_t c, int n)
@@ -208,7 +206,7 @@ void dispmsg()
 {
 	move(MSGLINE, 0);
 	if (msgflag) {
-		attron(COLOR_PAIR(ID_SYMBOL));
+		attrset(A_NORMAL);
 		addstr(msgline);
 		msgflag = FALSE;
 	}

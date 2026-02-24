@@ -393,6 +393,26 @@ void fzf_find_file()
 	}
 }
 
+void shell_cmd()
+{
+	int c;
+
+	temp[0] = '\0';
+	if (!getinput("Shell command: ", temp, TEMPBUF, F_CLEAR))
+		return;
+
+	def_prog_mode();
+	endwin();
+	printf("\n$ %s\n\n", temp);
+	(void)!system(temp);
+	printf("\n[Press ENTER to return to editor]");
+	fflush(stdout);
+	while ((c = getchar()) != '\n' && c != EOF)
+		;
+	reset_prog_mode();
+	refresh();
+}
+
 void showpos()
 {
 	int current, lastln;

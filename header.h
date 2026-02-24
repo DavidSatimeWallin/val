@@ -202,3 +202,4 @@ extern void set_parse_state(buffer_t *, point_t);
 extern int parse_text(buffer_t *, point_t);
 extern void resize_terminal();
 extern void fzf_find_file();
+extern void shell_cmd();

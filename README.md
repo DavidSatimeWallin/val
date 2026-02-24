@@ -80,6 +80,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     M-g   goto-line
     M-r   Search and Replace
     M-w   copy-region
+    M-.   shell-command
 
     C-<spacebar> Set mark at current position.
 
@@ -110,6 +111,11 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     Ctrl+Down    end of file
     Ctrk+Left    Page Down
     Ctrl+Right   Page Up
+
+### Shell Command
+
+    M-.  (ESC then .) prompts for a shell command, runs it, and displays the
+    output in the terminal. Press ENTER to return to the editor.
 
 ### Jump Command
 

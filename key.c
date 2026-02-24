@@ -29,6 +29,7 @@ keymap_t keymap[] = {
 	{"C-x C-n next-buffer      ", "\x18\x0E", next_buffer },
 	{"C-x n next-buffer        ", "\x18\x6E", next_buffer },
 	{"C-x C-f find-file        ", "\x18\x06", readfile },
+	{"C-x z fzf-find-file     ", "\x18\x7A", fzf_find_file },
 	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  
 	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */
 	{"C-x C-c exit             ", "\x18\x03", quit_ask },

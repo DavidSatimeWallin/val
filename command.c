@@ -338,6 +338,71 @@ void paste()
 	}
 }
 
+void fzf_find_file()
+{
+	char tempfile[] = "/tmp/atto_fzf_XXXXXX";
+	char command[NAME_MAX + 64];
+	char fname[NAME_MAX + 1];
+	buffer_t *bp;
+	FILE *fp;
+	int fd;
+	size_t len;
+
+	fd = mkstemp(tempfile);
+	if (fd < 0) {
+		msg("fzf: failed to create temp file");
+		return;
+	}
+	close(fd);
+
+	snprintf(command, sizeof(command), "/usr/bin/fzf > %s", tempfile);
+	def_prog_mode();
+	endwin();
+	int ret = system(command);
+	reset_prog_mode();
+	refresh();
+
+	if (ret != 0) {
+		unlink(tempfile);
+		msg("fzf: cancelled");
+		return;
+	}
+
+	fp = fopen(tempfile, "r");
+	unlink(tempfile);
+	if (fp == NULL) {
+		msg("fzf: failed to read result");
+		return;
+	}
+	fname[0] = '\0';
+	if (fgets(fname, NAME_MAX, fp) == NULL) {
+		fclose(fp);
+		msg("fzf: no file selected");
+		return;
+	}
+	fclose(fp);
+
+	len = strlen(fname);
+	if (len == 0) {
+		msg("fzf: no file selected");
+		return;
+	}
+	if (fname[len - 1] == '\n')
+		fname[--len] = '\0';
+
+	bp = find_buffer(fname, TRUE);
+	disassociate_b(curwp);
+	curbp = bp;
+	associate_b2w(curbp, curwp);
+
+	if (bp->b_fname[0] == '\0') {
+		if (!load_file(fname))
+			msg("New file %s", fname);
+		strncpy(curbp->b_fname, fname, NAME_MAX);
+		curbp->b_fname[NAME_MAX] = '\0';
+	}
+}
+
 void showpos()
 {
 	int current, lastln;

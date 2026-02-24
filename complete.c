@@ -39,13 +39,9 @@ int getfilename(char *prompt, char *buf, int nbuf)
 
 do_tab: 
 		case 0x09: /* TAB, complete file name */
-			/* scan backwards for a wild card and set */
-			iswild=0;
-			while (cpos > 0) {
-				cpos--;
-				if (buf[cpos] == '*' || buf[cpos] == '?')
-					iswild = 1;
-			}
+			/* scan for a wild card and reset cpos */
+			iswild = (strpbrk(buf, "*?") != NULL);
+			cpos = 0;
 
 			/* first time retrieval */
 			if (! didtry) {

@@ -80,7 +80,7 @@ point_t search_forward(buffer_t *bp, point_t start_p, char *stext)
 	point_t p,pp;
 	char* s;
 
-	if (0 == strlen(stext))
+	if (*stext == '\0')
 		return start_p;
 
 	for (p=start_p; p < end_p; p++) {
@@ -99,7 +99,7 @@ point_t search_backwards(buffer_t *bp, point_t start_p, char *stext)
 	point_t p,pp;
 	char* s;
 	
-	if (0 == strlen(stext))
+	if (*stext == '\0')
 		return start_p;
 
 	for (p=start_p; p >= 0; p--) {

@@ -215,12 +215,8 @@ void insertfile()
 void readfile()
 {
 	buffer_t *bp;
-	
-	temp[0] = '\0';
-	int result = getfilename("Find file: ", (char*)temp, NAME_MAX);
-	/* int result = getinput("Find file: ", (char*)temp, NAME_MAX, F_CLEAR); */
 
-	if (result) {
+	if (getfilename("Find file: ", temp, NAME_MAX)) {
 		bp = find_buffer(temp, TRUE);
 		disassociate_b(curwp); /* we are leaving the old buffer for a new one */
 		curbp = bp;
@@ -290,12 +286,7 @@ void iblock()
 	msg("Mark set");
 }
 
-void toggle_overwrite_mode() {
-	if (curbp->b_flags & B_OVERWRITE)
-		curbp->b_flags &= ~B_OVERWRITE;
-	else
-		curbp->b_flags |= B_OVERWRITE;
-}
+void toggle_overwrite_mode() { curbp->b_flags ^= B_OVERWRITE; }
 
 void killtoeol()
 {

@@ -58,7 +58,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
     C-G	  Abort (at prompts)
     C-H   backspace
     C-I   handle-tab
-    C-J   jump (see Jump Command)
+    M-j   jump (see Jump Command)
     C-K   kill-to-eol
     C-L   refresh display
     C-M   Carrage Return
@@ -119,7 +119,7 @@ Atto is based on the public domain code of Anthony Howe's editor (commonly known
 
 ### Jump Command
 
-    C-J  prompts for a jump target and moves the cursor accordingly.
+    M-j  prompts for a jump target and moves the cursor accordingly.
 
 Three input formats are supported:
 

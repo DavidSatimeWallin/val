@@ -1,4 +1,4 @@
-/* header.h, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/* header.h, Val Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 #define _XOPEN_SOURCE
 #include <locale.h>
 #include <stdlib.h>
@@ -14,8 +14,8 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Atto 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
-#define PROG_NAME "atto"
+#define VERSION	 "Val 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
+#define PROG_NAME "val"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwrite mode */
 #define MSGLINE         (LINES-1)

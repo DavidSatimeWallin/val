@@ -22,8 +22,8 @@ O       = .o
 
 OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) main$(O)
 
-atto$(E) : $(OBJ)
-	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
+val$(E) : $(OBJ)
+	$(LD) $(LDFLAGS) -o val$(E) $(OBJ) $(LIBS)
 
 command$(O): command.c header.h
 	$(CC) $(CFLAGS) -c command.c
@@ -65,8 +65,8 @@ main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	-$(RM) $(OBJ) atto$(E)
+	-$(RM) $(OBJ) val$(E)
 
 install:
-	-$(MV) atto$(E) /usr/local/bin/
+	-$(MV) val$(E) /usr/local/bin/
 

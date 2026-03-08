@@ -1,4 +1,4 @@
-/* buffer.c, Atto Emacs, Hugh Barney, Public Domain, 2015 */
+/* buffer.c, Val Emacs, Hugh Barney, Public Domain, 2015 */
 
 #include <assert.h>
 #include <string.h>

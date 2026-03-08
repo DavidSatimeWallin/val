@@ -1,4 +1,4 @@
-/* gap.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/* gap.c, Val Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include <sys/stat.h>
 #include "header.h"

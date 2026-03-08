@@ -1,4 +1,4 @@
-/* command.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/* command.c, Val Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
 
@@ -355,7 +355,7 @@ void paste()
 
 void fzf_find_file()
 {
-	char tempfile[] = "/tmp/atto_fzf_XXXXXX";
+	char tempfile[] = "/tmp/val_fzf_XXXXXX";
 	char command[NAME_MAX + 64];
 	char fname[NAME_MAX + 1];
 	FILE *fp;

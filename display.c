@@ -1,4 +1,4 @@
-/* display.c, Atto Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/* display.c, Val Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 
 #include "header.h"
 
@@ -267,7 +267,7 @@ void modeline(window_t *wp)
 	mch = ((wp->w_bufp->b_flags & B_MODIFIED) ? '*' : lch);
 	och = ((wp->w_bufp->b_flags & B_OVERWRITE) ? 'O' : lch);
 
-	sprintf(temp, "%c%c%c Atto: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
+	sprintf(temp, "%c%c%c Val: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 
 	for (i = strlen(temp) + 1; i <= COLS; i++)

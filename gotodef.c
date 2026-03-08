@@ -1,4 +1,4 @@
-/* gotodef.c, Go to definition, Atto Emacs, Public Domain */
+/* gotodef.c, Go to definition, Val Emacs, Public Domain */
 
 #include "header.h"
 

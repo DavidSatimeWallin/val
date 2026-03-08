@@ -1,4 +1,4 @@
-/* funclist.c, Function list navigation, Atto Emacs, Public Domain */
+/* funclist.c, Function list navigation, Val Emacs, Public Domain */
 
 #include "header.h"
 

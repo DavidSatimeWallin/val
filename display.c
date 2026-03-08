@@ -301,6 +301,16 @@ void update_display()
 	bp->b_psize = bp->b_size;  /* now safe to save previous size for next time */
 }
 
+void center_cursor()
+{
+	int i = curwp->w_rows / 2;
+	curbp->b_page = curbp->b_point;
+	while (0 < i--)
+		curbp->b_page = upup(curbp, curbp->b_page);
+	curbp->b_reframe = 0;
+	curbp->b_epage = pos(curbp, curbp->b_ebuf);
+}
+
 void w2b(window_t *w)
 {
 	w->w_bufp->b_point = w->w_point;

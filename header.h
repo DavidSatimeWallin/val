@@ -203,3 +203,6 @@ extern int parse_text(buffer_t *, point_t);
 extern void resize_terminal();
 extern void fzf_find_file();
 extern void shell_cmd();
+extern void center_cursor();
+extern void funclist();
+extern void gotodef();

@@ -20,7 +20,7 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) main$(O)
+OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) main$(O)
 
 atto$(E) : $(OBJ)
 	$(LD) $(LDFLAGS) -o atto$(E) $(OBJ) $(LIBS)
@@ -54,6 +54,12 @@ buffer$(O): buffer.c header.h
 
 hilite$(O): hilite.c header.h
 	$(CC) $(CFLAGS) -c hilite.c
+
+funclist$(O): funclist.c header.h
+	$(CC) $(CFLAGS) -c funclist.c
+
+gotodef$(O): gotodef.c header.h
+	$(CC) $(CFLAGS) -c gotodef.c
 
 main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c

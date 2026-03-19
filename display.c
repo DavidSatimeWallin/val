@@ -122,6 +122,7 @@ void display(window_t *wp, int flag)
 	char_t *p;
 	int i, j, k, nch;
 	int page_line, cursor_line, last_line, line_no, at_new_lline, gutter_w;
+	int on_cursor_line;
 	buffer_t *bp = wp->w_bufp;
 
 	compute_line_info(bp, &page_line, &cursor_line, &last_line);
@@ -158,6 +159,7 @@ void display(window_t *wp, int flag)
 
 	line_no = page_line;
 	at_new_lline = 1;
+	on_cursor_line = (line_no == cursor_line);
 	print_gutter(i, line_no, cursor_line, gutter_w, 1);
 
 	/* paint screen from top of page until we hit maxline */
@@ -178,7 +180,13 @@ void display(window_t *wp, int flag)
 				wchar_t c;
 				/* reset if invalid multi-byte character */
 				if (mbtowc(&c, (char*)p, 6) < 0) mbtowc(NULL, NULL, 0);
-				j += wcwidth(c) < 0 ? 1 : wcwidth(c);
+				int w = wcwidth(c) < 0 ? 1 : wcwidth(c);
+				if (on_cursor_line) {
+					attrset(COLOR_PAIR(ID_CURSOR_LINE));
+					for (int x = 0; x < w; x++) addch(' ');
+					attrset(A_NORMAL);
+				}
+				j += w;
 				display_utf8(bp, *p, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				int syn = parse_text(bp, bp->b_epage);
@@ -196,24 +204,39 @@ void display(window_t *wp, int flag)
 				}
 				if (syn != ID_COMMENT && func_end > 0 && bp->b_epage < func_end)
 					in_func = 1;
-				if (syn == ID_COMMENT)
+				if (on_cursor_line) {
+					attrset(COLOR_PAIR(ID_CURSOR_LINE));
+				} else if (syn == ID_COMMENT) {
 					attrset(A_BOLD | COLOR_PAIR(ID_COMMENT));
-				else if (in_func)
+				} else if (in_func) {
 					attrset(A_BOLD);
-				else
+				} else {
 					attrset(A_NORMAL);
+				}
 				if (*p == '\t') {
 					int tw = 8 - (j & 7);
 					j += tw;
-					while (tw--) addch(' ');
+					while (tw--) {
+						if (on_cursor_line) addch(' ');
+						else addch(' ');
+					}
 				} else {
 					j++;
 					addch(*p);
 				}
+				if (on_cursor_line) attrset(A_NORMAL);
 			} else {
-				const char *ctrl = unctrl(*p);
-				j += (int) strlen(ctrl);
-				addstr(ctrl);
+				if (on_cursor_line) {
+					attrset(COLOR_PAIR(ID_CURSOR_LINE));
+					const char *ctrl = unctrl(*p);
+					j += (int) strlen(ctrl);
+					addstr(ctrl);
+					attrset(A_NORMAL);
+				} else {
+					const char *ctrl = unctrl(*p);
+					j += (int) strlen(ctrl);
+					addstr(ctrl);
+				}
 			}
 		}
 		if (*p == '\n' || (COLS - gutter_w) <= j) {
@@ -222,8 +245,10 @@ void display(window_t *wp, int flag)
 				j = 0;
 			++i;
 			if (*p == '\n') { line_no++; at_new_lline = 1; } else { at_new_lline = 0; }
-			if (i < wp->w_top + wp->w_rows)
+			if (i < wp->w_top + wp->w_rows) {
 				print_gutter(i, line_no, cursor_line, gutter_w, at_new_lline);
+				on_cursor_line = (line_no == cursor_line);
+			}
 		}
 		bp->b_epage = bp->b_epage + nch;
 	}

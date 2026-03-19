@@ -31,6 +31,7 @@ int main(int argc, char **argv)
 	start_color();
 	init_pair(ID_MODELINE, COLOR_BLACK, COLOR_WHITE);
 	init_pair(ID_COMMENT, COLOR_BLUE, COLOR_BLACK);
+	init_pair(ID_CURSOR_LINE, COLOR_BLACK, COLOR_CYAN);
 	
 	if (1 < argc) {
 		curbp = find_buffer(argv[1], TRUE);

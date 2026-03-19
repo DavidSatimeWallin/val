@@ -1,5 +1,13 @@
 # Val Emacs Change Log
 
+## Val v2.00 19 Mar 2026
+* added Ollama chat integration (esc o) - chat with local AI models via Ollama API
+* added git diff viewer (esc d) - browse diff output with keyboard navigation
+* added current line highlighting with cyan background
+* changed fzf-find-file binding from C-x z to esc .
+* changed shell-command binding from M-. to esc -
+* updated build system: added curl and json-c libraries for Ollama support
+
 ## Val v1.22 06 Dec 2020
 * fixed some color issues when running on Arch, needed to set color in modeline and msg line
 

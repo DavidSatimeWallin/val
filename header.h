@@ -1,4 +1,4 @@
-/* header.h, Val Emacs, Public Domain, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/* header.h, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
 #define _XOPEN_SOURCE
 #include <locale.h>
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Val 1.22, Public Domain, Dec 2020, by Hugh Barney,  No warranty."
+#define VERSION	 "Val 2.00, Public Domain, 2026 by David Satime Wallin,  No warranty."
 #define PROG_NAME "val"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwrite mode */
@@ -31,8 +31,9 @@ int mkstemp(char *);
 #define F_NONE          0
 #define F_CLEAR         1
 #define ID_DEFAULT      1
-#define ID_COMMENT      2
+#define ID_COMMENT     2
 #define ID_MODELINE     3
+#define ID_CURSOR_LINE  4
 
 typedef unsigned char char_t;
 typedef long point_t;
@@ -206,3 +207,5 @@ extern void shell_cmd();
 extern void center_cursor();
 extern void funclist();
 extern void gotodef();
+extern void ollama_chat_view();
+extern void show_git_diff();

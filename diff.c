@@ -32,9 +32,9 @@ static void init_colors(void)
 {
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_CYAN, COLOR_BLACK);
-    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(5, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(6, COLOR_CYAN, COLOR_BLACK);
+    init_pair(7, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(8, COLOR_BLACK, COLOR_YELLOW);
 }
 
 static void draw_diff_view(void)
@@ -58,20 +58,20 @@ static void draw_diff_view(void)
         int is_selected = (line_idx == cursor_pos);
 
         if (is_selected) {
-            attrset(COLOR_PAIR(5) | A_BOLD);
+            attrset(COLOR_PAIR(8) | A_BOLD);
             move(vis_row, 0);
             clrtoeol();
             mvaddnstr(vis_row, 0, line_start, len);
             clrtoeol();
-            attroff(COLOR_PAIR(5));
+            attroff(COLOR_PAIR(8));
             attroff(A_BOLD);
         } else {
             int pair = 0;
             switch (diff_lines[line_idx].line_type) {
                 case LINE_ADD: pair = 2; break;
                 case LINE_DEL: pair = 1; break;
-                case LINE_HUNK: pair = 3; break;
-                case LINE_HEADER: pair = 4; break;
+                case LINE_HUNK: pair = 6; break;
+                case LINE_HEADER: pair = 7; break;
             }
             if (pair > 0) {
                 attrset(COLOR_PAIR(pair));

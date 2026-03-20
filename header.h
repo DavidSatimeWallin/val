@@ -14,7 +14,7 @@
 #include <wchar.h>
 int mkstemp(char *);
 
-#define VERSION	 "Val 2.00, Public Domain, 2026 by David Satime Wallin,  No warranty."
+#define VERSION	 "Val 2.1.0, Public Domain, 2026 by David Satime Wallin,  No warranty."
 #define PROG_NAME "val"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwrite mode */
@@ -209,3 +209,5 @@ extern void funclist();
 extern void gotodef();
 extern void ollama_chat_view();
 extern void show_git_diff();
+extern void show_keyboard_help();
+extern void indent_to_tabs();

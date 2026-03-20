@@ -14,6 +14,97 @@ void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
 void resize_terminal() { one_window(curwp); }
 
+void indent_to_tabs(void)
+{
+	point_t orig_point = curbp->b_point;
+	int changes = 0;
+	
+	point_t end_pos = pos(curbp, curbp->b_ebuf);
+	int bufsize = end_pos;
+	
+	char *tmp = malloc(bufsize + 1);
+	if (!tmp) {
+		msg("Failed to allocate memory");
+		return;
+	}
+	
+	curbp->b_point = movegap(curbp, 0);
+	for (int i = 0; i < bufsize; i++) {
+		tmp[i] = curbp->b_egap[i];
+	}
+	
+	char *out = malloc(bufsize * 8 + 1);
+	if (!out) {
+		free(tmp);
+		msg("Failed to allocate memory");
+		return;
+	}
+	
+	int out_len = 0;
+	int i = 0;
+	
+	while (i < bufsize) {
+		if (tmp[i] == '\n') {
+			out[out_len++] = '\n';
+			i++;
+		} else if (tmp[i] == ' ' && (out_len == 0 || out[out_len - 1] == '\n')) {
+			int spaces = 0;
+			while (i + spaces < bufsize && tmp[i + spaces] == ' ' && spaces < 8) {
+				spaces++;
+			}
+			
+			if (i + spaces < bufsize && tmp[i + spaces] == '\n') {
+				i += spaces;
+			} else {
+				int tabs = spaces / 8;
+				int leftover = spaces % 8;
+				
+				for (int j = 0; j < tabs; j++) {
+					out[out_len++] = '\t';
+				}
+				for (int j = 0; j < leftover; j++) {
+					out[out_len++] = ' ';
+				}
+				
+				if (tabs > 0 || leftover > 0) {
+					changes++;
+				}
+				i += spaces;
+			}
+		} else {
+			out[out_len++] = tmp[i++];
+		}
+	}
+	
+	free(tmp);
+	
+	curbp->b_point = 0;
+	curbp->b_gap = curbp->b_buf;
+	curbp->b_egap = curbp->b_buf;
+	curbp->b_ebuf = curbp->b_buf;
+	
+	if (!growgap(curbp, out_len + 1024)) {
+		free(out);
+		msg("Failed to grow buffer");
+		return;
+	}
+	
+	curbp->b_point = movegap(curbp, 0);
+	memcpy(curbp->b_gap, out, out_len);
+	curbp->b_gap += out_len;
+	curbp->b_point = pos(curbp, curbp->b_egap);
+	
+	free(out);
+	
+	if (orig_point > out_len) {
+		orig_point = out_len;
+	}
+	curbp->b_point = orig_point;
+	curbp->b_flags |= B_MODIFIED;
+	
+	msg("Replaced indentation with tabs (%d lines changed)", changes);
+}
+
 void quit_ask()
 {
 	if (modified_buffers() > 0) {
@@ -124,25 +215,99 @@ void wright()
 		++curbp->b_point;
 }
 
-void insert()
+static int count_leading_tabs(void)
+{
+	point_t line_start = lnstart(curbp, curbp->b_point);
+	int tabs = 0;
+	char_t *p = ptr(curbp, line_start);
+	
+	while (p < ptr(curbp, curbp->b_point) || (p == ptr(curbp, curbp->b_point) && p < curbp->b_egap)) {
+		if (*p == '\t') {
+			tabs++;
+			p++;
+		} else if (*p == ' ') {
+			tabs++;
+			p++;
+		} else {
+			break;
+		}
+	}
+	return tabs;
+}
+
+static int count_brace_indent(void)
+{
+	int depth = 0;
+	point_t p = 0;
+	point_t end = curbp->b_point;
+	char_t *cp;
+	
+	while (p < end) {
+		cp = ptr(curbp, p);
+		if (*cp == '{') {
+			depth++;
+		} else if (*cp == '}') {
+			depth--;
+		}
+		p++;
+	}
+	
+	if (depth < 0) depth = 0;
+	return depth;
+}
+
+static void insert_char(char c)
 {
 	assert(curbp->b_gap <= curbp->b_egap);
 	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
 		return;
 	curbp->b_point = movegap(curbp, curbp->b_point);
 
-	/* overwrite if mid line, not EOL or EOF, CR will insert as normal */
-	if ((curbp->b_flags & B_OVERWRITE) && *input != '\r' && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
-		*(ptr(curbp, curbp->b_point)) = *input;
+	if ((curbp->b_flags & B_OVERWRITE) && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
+		*(ptr(curbp, curbp->b_point)) = c;
 		if (curbp->b_point < pos(curbp, curbp->b_ebuf))
 			++curbp->b_point;
 	} else {
-		*curbp->b_gap++ = *input == '\r' ? '\n' : *input;
+		*curbp->b_gap++ = c;
 		curbp->b_point = pos(curbp, curbp->b_egap);
-		// force reframe if scrolled off bottom of screen and at EOF
 		if (curbp->b_point == pos(curbp, curbp->b_ebuf) && curbp->b_point >= curbp->b_epage) curbp->b_reframe = 1;
 	}
 	curbp->b_flags |= B_MODIFIED;
+}
+
+void insert()
+{
+	if (*input == '\r' || *input == '\n') {
+		int tabs = count_leading_tabs();
+		insert_char('\n');
+		for (int i = 0; i < tabs; i++) {
+			insert_char('\t');
+		}
+		return;
+	}
+	
+	if (*input == '{') {
+		insert_char('{');
+		int tabs = count_leading_tabs();
+		insert_char('\n');
+		for (int i = 0; i < tabs + 1; i++) {
+			insert_char('\t');
+		}
+		return;
+	}
+	
+	if (*input == '}') {
+		int tabs = count_brace_indent();
+		if (tabs > 0) tabs--;
+		insert_char('\n');
+		for (int i = 0; i < tabs; i++) {
+			insert_char('\t');
+		}
+		insert_char('}');
+		return;
+	}
+	
+	insert_char(*input);
 }
 
 void backsp()

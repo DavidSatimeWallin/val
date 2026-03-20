@@ -36,6 +36,8 @@ keymap_t keymap[] = {
 	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  
 	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */
 	{"C-x C-c exit             ", "\x18\x03", quit_ask },
+	{"C-x h keyboard-help      ", "\x18\x68", show_keyboard_help },
+	{"C-x r i indent-to-tabs   ", "\x18\x72\x69", indent_to_tabs },
 	{"esc l funclist           ", "\x1B\x6C", funclist },
 	{"esc o ollama             ", "\x1B\x6F", ollama_chat_view },
 	{"esc d git-diff           ", "\x1B\x64", show_git_diff },

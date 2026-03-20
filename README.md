@@ -1,6 +1,6 @@
-# Val
+# Val v2.1.0
 
-A tiny terminal text editor with Emacs-style key bindings, written in under 3000 lines of C.
+A tiny terminal text editor with Emacs-style key bindings, written in under 4000 lines of C.
 
 Originally based on [Atto](https://github.com/hughbarney/atto) by Hugh Barney, which itself derives from Anthony Howe's public domain editor.
 
@@ -19,19 +19,22 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Relative line numbers** -- gutter shows absolute line number on the current line and relative distances on all others
 - **UTF-8 support** -- edit files containing multi-byte and wide characters
 - **Filename completion** -- tab-complete file paths at prompts
-- **fzf integration** -- fuzzy-find and open files with `C-x z` (requires `/usr/bin/fzf`)
-- **Shell commands** -- run a shell command and view its output without leaving the editor
+- **fzf integration** -- fuzzy-find and open files with `Esc .` (requires `/usr/bin/fzf`)
+- **Shell commands** -- run a shell command and view its output with `Esc -`
+- **Ollama chat** -- chat with local AI models via Ollama API with `Esc o`
+- **Git diff viewer** -- browse git diff output with keyboard navigation using `Esc d`
 - **Go to definition** -- jump to a C function definition with `Esc ,`
 - **Function list** -- browse and jump to functions in the current buffer with `Esc l`
 - **Jump command** -- jump to an absolute line or move up/down by a relative number of lines
+- **Smart auto-indentation** -- automatic indentation for newlines, `{` and `}` braces
 - **Overwrite mode** -- toggle between insert and overwrite with the Ins key
 - **Buffer-gap architecture** -- efficient internal representation that keeps the entire codebase small and fast
 
 ## Building
 
-Requires `libncursesw`. On Debian/Ubuntu:
+Requires `libncursesw`, `libcurl`, and `libjson-c`. On Debian/Ubuntu:
 
-    sudo apt-get install libncurses5-dev
+    sudo apt-get install libncurses5-dev libcurl4-openssl-dev libjson-c-dev
 
 Then:
 
@@ -77,7 +80,8 @@ Then:
 ### Files and Buffers
 
     C-x C-f          find file (open into new buffer)
-    C-x z            find file with fzf
+    Esc .            find file with fzf
+    Esc -            run shell command
     C-x C-s          save buffer
     C-x C-w          write buffer (prompt for filename)
     C-x i            insert file at point
@@ -90,11 +94,17 @@ Then:
     C-x o            switch to other window
     C-x 1            delete other windows
 
-### Other
+### Help and Utilities
 
-    M-.              shell command
+    C-x h            keyboard shortcuts help browser
+    C-x r i          indent-to-tabs conversion
+    Esc d            git diff viewer
+    Esc o            Ollama chat (requires local Ollama server)
     Esc ,            go to definition
     Esc l            function list
+
+### Other
+
     C-x =            show cursor position
     C-l              refresh display
     Esc Esc          show version

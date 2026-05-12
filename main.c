@@ -29,8 +29,9 @@ int main(int argc, char **argv)
 	idlok(stdscr, TRUE);
 
 	start_color();
+	use_default_colors();
 	init_pair(ID_MODELINE, COLOR_BLACK, COLOR_WHITE);
-	init_pair(ID_COMMENT, COLOR_BLUE, COLOR_BLACK);
+	init_pair(ID_COMMENT, COLOR_BLUE, -1);
 	init_pair(ID_CURSOR_LINE, COLOR_BLACK, COLOR_CYAN);
 	
 	if (1 < argc) {

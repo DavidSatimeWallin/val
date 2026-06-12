@@ -164,6 +164,7 @@ void display(window_t *wp, int flag)
 
 	/* paint screen from top of page until we hit maxline */
 	point_t func_end = -1;
+	int in_region = 0;
 	while (1) {
 		/* reached point - store the cursor position (text col, gutter offset added at move) */
 		if (bp->b_point == bp->b_epage) {
@@ -176,19 +177,31 @@ void display(window_t *wp, int flag)
 			break;
 		if (*p != '\r') {
 			nch = utf8_size(*p);
+			if (bp->b_mark != NOMARK && bp->b_mark != bp->b_point) {
+				point_t r1 = bp->b_mark < bp->b_point ? bp->b_mark : bp->b_point;
+				point_t r2 = bp->b_mark > bp->b_point ? bp->b_mark : bp->b_point;
+				in_region = (bp->b_epage >= r1 && bp->b_epage < r2);
+			} else {
+				in_region = 0;
+			}
 			if ( nch > 1) {
 				wchar_t c;
 				/* reset if invalid multi-byte character */
 				if (mbtowc(&c, (char*)p, 6) < 0) mbtowc(NULL, NULL, 0);
 				int w = wcwidth(c);
 				if (w < 0) w = 1;
-				if (on_cursor_line) {
+				if (in_region) {
+					attrset(A_REVERSE);
+					for (int x = 0; x < w; x++) addch(' ');
+					display_utf8(bp, *p, nch);
+					attrset(A_NORMAL);
+				} else if (on_cursor_line) {
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
 					for (int x = 0; x < w; x++) addch(' ');
 					attrset(A_NORMAL);
 				}
 				j += w;
-				display_utf8(bp, *p, nch);
+				if (!in_region) display_utf8(bp, *p, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				int syn = parse_text(bp, bp->b_epage);
 				int in_func = 0;
@@ -205,7 +218,9 @@ void display(window_t *wp, int flag)
 				}
 				if (syn != ID_COMMENT && func_end > 0 && bp->b_epage < func_end)
 					in_func = 1;
-				if (on_cursor_line) {
+				if (in_region) {
+					attrset(A_REVERSE);
+				} else if (on_cursor_line) {
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
 				} else if (syn == ID_COMMENT) {
 					attrset(A_BOLD | COLOR_PAIR(ID_COMMENT));
@@ -217,27 +232,23 @@ void display(window_t *wp, int flag)
 				if (*p == '\t') {
 					int tw = 8 - (j & 7);
 					j += tw;
-					while (tw--) {
-						if (on_cursor_line) addch(' ');
-						else addch(' ');
-					}
+					while (tw--)
+						addch(' ');
 				} else {
 					j++;
 					addch(*p);
 				}
-				if (on_cursor_line) attrset(A_NORMAL);
+				if (in_region || on_cursor_line) attrset(A_NORMAL);
 			} else {
-				if (on_cursor_line) {
+				if (in_region) {
+					attrset(A_REVERSE);
+				} else if (on_cursor_line) {
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
-					const char *ctrl = unctrl(*p);
-					j += (int) strlen(ctrl);
-					addstr(ctrl);
-					attrset(A_NORMAL);
-				} else {
-					const char *ctrl = unctrl(*p);
-					j += (int) strlen(ctrl);
-					addstr(ctrl);
 				}
+				const char *ctrl = unctrl(*p);
+				j += (int) strlen(ctrl);
+				addstr(ctrl);
+				if (in_region || on_cursor_line) attrset(A_NORMAL);
 			}
 		}
 		if (*p == '\n' || (COLS - gutter_w) <= j) {
@@ -285,15 +296,16 @@ void display_utf8(buffer_t *bp, char_t c, int n)
 void modeline(window_t *wp)
 {
 	int i;
-	char lch, mch, och;
+	char lch, mch, och, rch;
 	
 	attron(COLOR_PAIR(ID_MODELINE));
 	move(wp->w_top + wp->w_rows, 0);
 	lch = (wp == curwp ? '=' : '-');
 	mch = ((wp->w_bufp->b_flags & B_MODIFIED) ? '*' : lch);
 	och = ((wp->w_bufp->b_flags & B_OVERWRITE) ? 'O' : lch);
+	rch = (wp->w_bufp->b_mark != NOMARK && wp->w_bufp->b_mark != wp->w_bufp->b_point) ? 'R' : lch;
 
-	sprintf(temp, "%c%c%c Val: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
+	sprintf(temp, "%c%c%c%c Val: %c%c %s",  lch,och,mch,rch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 
 	i = strlen(temp) + 1;

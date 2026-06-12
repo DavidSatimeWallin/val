@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <wchar.h>
 
-#define VERSION	 "Val 2.3.0, Public Domain, 2026 by David Satime Wallin,  No warranty."
+#define VERSION	 "Val 2.4.0, Public Domain, 2026 by David Satime Wallin,  No warranty."
 #define PROG_NAME "val"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwrite mode */
@@ -144,6 +144,7 @@ extern int insert_file(char *, int);
 extern void backsp(void);
 extern void block(void);
 extern void iblock(void);
+extern void deactivate_mark(void);
 extern void bottom(void);
 extern void cut(void);
 extern void copy(void);

@@ -13,6 +13,7 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Menu bar** -- interactive top menu with all keyboard shortcuts (F10 or `C-x m`)
 - **Multiple buffers** -- open, switch between, and close files independently
 - **Multiple windows** -- split the screen and view different buffers (or the same buffer) side by side
+- **Visual region highlighting** -- the selected region is displayed in reverse video, giving clear visual feedback when the mark is active
 - **Cut, copy, and paste** -- mark a region, cut or copy it, and yank it back anywhere
 - **Search** -- incremental forward and backward search with wrap-around
 - **Search and replace** -- interactive query-replace
@@ -66,10 +67,11 @@ Then:
 	C-d / Del        delete character under cursor
 	C-h / Backspace  delete character to the left
 	C-k              kill to end of line
-	C-Space          set mark
+	C-Space          set mark (region highlighted in reverse video)
 	C-w              kill region (cut)
 	M-w              copy region
 	C-y              yank (paste)
+	C-g              deactivate mark (clear region)
 	Ins              toggle overwrite mode
 
 ### Search and Replace

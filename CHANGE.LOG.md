@@ -1,5 +1,12 @@
 # Val Emacs Change Log
 
+## Val v2.4.0 12 Jun 2026
+* added visual region highlighting -- the mark/region is now displayed in
+  reverse video, making the selected text visible on screen
+* added modeline indicator ('R') when a region is active
+* added C-g (deactivate-mark) to clear the mark and remove highlighting
+* updated README.md, CHANGE.LOG.md
+
 ## Val v2.3.0 12 Jun 2026
 * added undo/redo (C-_ / C-x u undo, M-_ redo) with per-buffer stacks
 * consecutive inserts and backspaces merge into single undo records

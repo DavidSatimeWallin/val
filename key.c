@@ -21,6 +21,7 @@ keymap_t keymap[] = {
 	{"C-w kill-region          ", "\x17", cut},
 	{"C-y yank                 ", "\x19", paste},
 	{"C-space set-mark         ", "\x00", iblock },  /* ctrl-space */
+	{"C-g deactivate-mark     ", "\x07", deactivate_mark },
 	{"C-x 1 delete-other-window", "\x18\x31", delete_other_windows },
 	{"C-x 2 split-window       ", "\x18\x32", split_window },
 	{"C-x o other-window       ", "\x18\x6F", next_window },

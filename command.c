@@ -393,6 +393,12 @@ void iblock()
 	msg("Mark set");
 }
 
+void deactivate_mark()
+{
+	curbp->b_mark = NOMARK;
+	msg("Mark deactivated");
+}
+
 void toggle_overwrite_mode() { curbp->b_flags ^= B_OVERWRITE; }
 
 void killtoeol()

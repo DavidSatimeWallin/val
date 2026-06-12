@@ -71,7 +71,7 @@ point_t movegap(buffer_t *bp, point_t offset)
 }
 
 /* Given a buffer offset, convert it to a pointer into the buffer */
-char_t * ptr(buffer_t *bp, register point_t offset)
+char_t * ptr(buffer_t *bp, point_t offset)
 {
 	if (offset < 0)
 		return (bp->b_buf);
@@ -79,7 +79,7 @@ char_t * ptr(buffer_t *bp, register point_t offset)
 }
 
 /* Given a pointer into the buffer, convert it to a buffer offset */
-point_t pos(buffer_t *bp, register char_t *cp)
+point_t pos(buffer_t *bp, char_t *cp)
 {
 	assert(bp->b_buf <= cp && cp <= bp->b_ebuf);
 	return (cp - bp->b_buf - (cp < bp->b_egap ? 0 : bp->b_egap - bp->b_gap));

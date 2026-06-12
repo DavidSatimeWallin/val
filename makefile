@@ -11,7 +11,7 @@ CFLAGS  = -O -Wall
 
 LD      = cc
 LDFLAGS =
-LIBS    = -lncursesw -lcurl -ljson-c
+LIBS    = -lncursesw
 
 CP      = cp
 MV      = mv
@@ -20,58 +20,13 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) diff$(O) help$(O) menu$(O) main$(O)
+OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) diff$(O) help$(O) menu$(O) undo$(O) main$(O)
 
 val$(E) : $(OBJ)
 	$(LD) $(LDFLAGS) -o val$(E) $(OBJ) $(LIBS)
 
-command$(O): command.c header.h
-	$(CC) $(CFLAGS) -c command.c
-
-complete$(O): complete.c header.h
-	$(CC) $(CFLAGS) -c complete.c
-
-display$(O): display.c header.h
-	$(CC) $(CFLAGS) -c display.c
-
-gap$(O): gap.c header.h
-	$(CC) $(CFLAGS) -c gap.c
-
-key$(O): key.c header.h
-	$(CC) $(CFLAGS) -c key.c
-
-search$(O): search.c header.h
-	$(CC) $(CFLAGS) -c search.c
-
-replace$(O): replace.c header.h
-	$(CC) $(CFLAGS) -c replace.c
-
-window$(O): window.c header.h
-	$(CC) $(CFLAGS) -c window.c
-
-buffer$(O): buffer.c header.h
-	$(CC) $(CFLAGS) -c buffer.c
-
-hilite$(O): hilite.c header.h
-	$(CC) $(CFLAGS) -c hilite.c
-
-funclist$(O): funclist.c header.h
-	$(CC) $(CFLAGS) -c funclist.c
-
-gotodef$(O): gotodef.c header.h
-	$(CC) $(CFLAGS) -c gotodef.c
-
-diff$(O): diff.c header.h
-	$(CC) $(CFLAGS) -c diff.c
-
-help$(O): help.c header.h
-	$(CC) $(CFLAGS) -c help.c
-
-menu$(O): menu.c header.h
-	$(CC) $(CFLAGS) -c menu.c
-
-main$(O): main.c header.h
-	$(CC) $(CFLAGS) -c main.c
+%.o: %.c header.h
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	-$(RM) $(OBJ) val$(E)

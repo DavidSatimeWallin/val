@@ -1,6 +1,6 @@
-# Val v2.1.0
+# Val
 
-A tiny terminal text editor with Emacs-style key bindings, written in under 4000 lines of C.
+A tiny terminal text editor with Emacs-style key bindings.
 
 Originally based on [Atto](https://github.com/hughbarney/atto) by Hugh Barney, which itself derives from Anthony Howe's public domain editor.
 
@@ -10,6 +10,7 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 
 ## Features
 
+- **Menu bar** -- interactive top menu with all keyboard shortcuts (F10 or `C-x m`)
 - **Multiple buffers** -- open, switch between, and close files independently
 - **Multiple windows** -- split the screen and view different buffers (or the same buffer) side by side
 - **Cut, copy, and paste** -- mark a region, cut or copy it, and yank it back anywhere
@@ -19,21 +20,20 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Relative line numbers** -- gutter shows absolute line number on the current line and relative distances on all others
 - **UTF-8 support** -- edit files containing multi-byte and wide characters
 - **Filename completion** -- tab-complete file paths at prompts
-- **fzf integration** -- fuzzy-find and open files with `Esc .` (requires `/usr/bin/fzf`)
-- **Shell commands** -- run a shell command and view its output with `Esc -`
-- **Ollama chat** -- chat with local AI models via Ollama API with `Esc o`
-- **Git diff viewer** -- browse git diff output with keyboard navigation using `Esc d`
-- **Go to definition** -- jump to a C function definition with `Esc ,`
-- **Function list** -- browse and jump to functions in the current buffer with `Esc l`
+- **fzf integration** -- fuzzy-find and open files with `M-.` (requires `/usr/bin/fzf`)
+- **Shell commands** -- run a shell command and view its output with `M--`
+- **Git diff viewer** -- browse git diff output with keyboard navigation using `M-d`
+- **Go to definition** -- jump to a C function definition with `M-,`
+- **Function list** -- browse and jump to functions in the current buffer with `M-l`
 - **Jump command** -- jump to an absolute line or move up/down by a relative number of lines
 - **Overwrite mode** -- toggle between insert and overwrite with the Ins key
 - **Buffer-gap architecture** -- efficient internal representation that keeps the entire codebase small and fast
 
 ## Building
 
-Requires `libncursesw`, `libcurl`, and `libjson-c`. On Debian/Ubuntu:
+Requires `libncursesw`:
 
-    sudo apt-get install libncurses5-dev libcurl4-openssl-dev libjson-c-dev
+    sudo apt-get install libncurses5-dev
 
 Then:
 
@@ -61,14 +61,16 @@ Then:
 
 ### Editing
 
-    C-d / Del        delete character under cursor
-    C-h / Backspace  delete character to the left
-    C-k              kill to end of line
-    C-Space          set mark
-    C-w              kill region (cut)
-    M-w              copy region
-    C-y              yank (paste)
-    Ins              toggle overwrite mode
+	C-_ / C-x u      undo
+	M-_              redo
+	C-d / Del        delete character under cursor
+	C-h / Backspace  delete character to the left
+	C-k              kill to end of line
+	C-Space          set mark
+	C-w              kill region (cut)
+	M-w              copy region
+	C-y              yank (paste)
+	Ins              toggle overwrite mode
 
 ### Search and Replace
 
@@ -79,8 +81,8 @@ Then:
 ### Files and Buffers
 
     C-x C-f          find file (open into new buffer)
-    Esc .            find file with fzf
-    Esc -            run shell command
+    M-.              find file with fzf
+    M--              run shell command
     C-x C-s          save buffer
     C-x C-w          write buffer (prompt for filename)
     C-x i            insert file at point
@@ -97,14 +99,14 @@ Then:
 
     C-x h            keyboard shortcuts help browser
     C-x r i          indent-to-tabs conversion
-    Esc d            git diff viewer
-    Esc o            Ollama chat (requires local Ollama server)
-    Esc ,            go to definition
-    Esc l            function list
+    M-d              git diff viewer
+    M-,              go to definition
+    M-l              function list
+    F10 / C-x m      menu bar
 
 ### Other
 
     C-x =            show cursor position
     C-l              refresh display
-    Esc Esc          show version
+    M-M              show version
     C-x C-c          exit (prompts if unsaved buffers exist)

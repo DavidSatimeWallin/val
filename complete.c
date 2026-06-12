@@ -49,12 +49,7 @@ do_tab:
 				strcpy(temp_file, TEMPFILE);
 				if (-1 == (fd = mkstemp(temp_file)))
 					fatal("%s: Failed to create temp file\n");
-				strcpy(sys_command, "echo ");
-				strcat(sys_command, buf);
-				if (!iswild) strcat(sys_command, "*");
-				strcat(sys_command, " >");
-				strcat(sys_command, temp_file);
-				strcat(sys_command, " 2>&1");
+				snprintf(sys_command, sizeof(sys_command), "echo %s%s >%s 2>&1", buf, iswild ? "" : "*", temp_file);
 				(void) ! system(sys_command); /* stop compiler unused result warning */
 				fp = fdopen(fd, "r");
 				unlink(temp_file);

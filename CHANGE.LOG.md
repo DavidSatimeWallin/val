@@ -1,17 +1,40 @@
 # Val Emacs Change Log
 
+## Val v2.3.0 12 Jun 2026
+* added undo/redo (C-_ / C-x u undo, M-_ redo) with per-buffer stacks
+* consecutive inserts and backspaces merge into single undo records
+* cut/paste operations are also tracked
+* fixed inverted gap-size check in query-replace (bug since v1.8)
+* made syntax highlighting state per-buffer (not global; bug since v1.8)
+* added bounds check on vsnprintf in msg() (potential overflow)
+* reordered dereference-before-bounds on overwrite insert in insert_char
+* added b_cnt assertion before free in delete_buffer()
+* fixed color pair collision in git diff viewer (pairs 1/2 conflicted with ID_DEFAULT/ID_COMMENT)
+* converted strcpy/strcat chain to snprintf in getfilename()
+* removed unused sys/types.h, mkstemp prototype, duplicate query_replace decl,
+  dead update_search_prompt declaration
+* set _XOPEN_SOURCE to 700 (was bare, causing POSIX feature test failures)
+* fixed Yoda conditionals and function parameter name shadowing msg() in main.c
+* hoisted strlen() out of modeline loop, fixed double wcwidth() call in display
+* removed obsolete register keyword throughout
+* unified makefile with pattern rule
+* updated README.md, CHANGE.LOG.md
+
+## Val v2.2.0 12 Jun 2026
+* added interactive menu bar (F10 / C-x m) with keyboard shortcuts from keys.c
+* removed Ollama chat integration and curl/json-c dependencies
+* cleaned up stale object files and build dependencies
+
 ## Val v2.1.0 20 Mar 2026
 * added keyboard shortcuts help browser (C-x h) - opens shortcuts in a temp file buffer
 * added indent-to-tabs conversion (C-x r i) - converts space indentation to tabs
 * bumped version from v2.00 to v2.1.0
 
 ## Val v2.00 19 Mar 2026
-* added Ollama chat integration (esc o) - chat with local AI models via Ollama API
 * added git diff viewer (esc d) - browse diff output with keyboard navigation
 * added current line highlighting with cyan background
 * changed fzf-find-file binding from C-x z to esc .
 * changed shell-command binding from M-. to esc -
-* updated build system: added curl and json-c libraries for Ollama support
 
 ## Val v1.22 06 Dec 2020
 * fixed some color issues when running on Arch, needed to set color in modeline and msg line

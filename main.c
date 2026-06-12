@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	init_pair(ID_COMMENT, COLOR_BLUE, -1);
 	init_pair(ID_CURSOR_LINE, COLOR_BLACK, COLOR_CYAN);
 	
-	if (1 < argc) {
+	if (argc > 1) {
 		curbp = find_buffer(argv[1], TRUE);
 		(void) insert_file(argv[1], FALSE);
 		/* Save filename regardless of load() success. */
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void fatal(char *msg)
+void fatal(char *fmt)
 {
 	if (curscr != NULL) {
 		move(LINES-1, 0);
@@ -86,15 +86,15 @@ void fatal(char *msg)
 		endwin();
 		putchar('\n');
 	}
-	fprintf(stderr, msg, PROG_NAME);
+	fprintf(stderr, fmt, PROG_NAME);
 	exit(1);
 }
 
-void msg(char *msg, ...)
+void msg(char *fmt, ...)
 {
 	va_list args;
-	va_start(args, msg);
-	(void)vsprintf(msgline, msg, args);
+	va_start(args, fmt);
+	(void)vsnprintf(msgline, TEMPBUF, fmt, args);
 	va_end(args);
 	msgflag = TRUE;
 }

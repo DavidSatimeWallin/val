@@ -210,9 +210,9 @@ void pgup()
 void wright()
 {
 	char_t *p;
-	while (!isspace(*(p = ptr(curbp, curbp->b_point))) && p < curbp->b_ebuf)
+	while ((p = ptr(curbp, curbp->b_point)) < curbp->b_ebuf && !isspace(*p))
 		++curbp->b_point;
-	while (isspace(*(p = ptr(curbp, curbp->b_point))) && p < curbp->b_ebuf)
+	while ((p = ptr(curbp, curbp->b_point)) < curbp->b_ebuf && isspace(*p))
 		++curbp->b_point;
 }
 
@@ -221,9 +221,10 @@ static void insert_char(char c)
 	assert(curbp->b_gap <= curbp->b_egap);
 	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
 		return;
+	point_t p = curbp->b_point;
 	curbp->b_point = movegap(curbp, curbp->b_point);
 
-	if ((curbp->b_flags & B_OVERWRITE) && *(ptr(curbp, curbp->b_point)) != '\n' && curbp->b_point < pos(curbp,curbp->b_ebuf) ) {
+	if ((curbp->b_flags & B_OVERWRITE) && curbp->b_point < pos(curbp, curbp->b_ebuf) && *(ptr(curbp, curbp->b_point)) != '\n') {
 		*(ptr(curbp, curbp->b_point)) = c;
 		if (curbp->b_point < pos(curbp, curbp->b_ebuf))
 			++curbp->b_point;
@@ -231,6 +232,7 @@ static void insert_char(char c)
 		*curbp->b_gap++ = c;
 		curbp->b_point = pos(curbp, curbp->b_egap);
 		if (curbp->b_point == pos(curbp, curbp->b_ebuf) && curbp->b_point >= curbp->b_epage) curbp->b_reframe = 1;
+		record_undo(curbp, p, 1, 0, (char_t*)&c);
 	}
 	curbp->b_flags |= B_MODIFIED;
 }
@@ -244,7 +246,12 @@ void backsp()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_buf < curbp->b_gap) {
-		curbp->b_gap -= prev_utf8_char_size();
+		int sz = prev_utf8_char_size();
+		point_t p = pos(curbp, curbp->b_gap) - sz;
+		char_t buf[4];
+		memcpy(buf, curbp->b_gap - sz, sz);
+		curbp->b_gap -= sz;
+		record_undo(curbp, p, sz, 1, buf);
 		curbp->b_flags |= B_MODIFIED;
 	}
 	curbp->b_point = pos(curbp, curbp->b_egap);
@@ -254,8 +261,13 @@ void delete()
 {
 	curbp->b_point = movegap(curbp, curbp->b_point);
 	if (curbp->b_egap < curbp->b_ebuf) {
-		curbp->b_egap += utf8_size(*curbp->b_egap);
+		int sz = utf8_size(*curbp->b_egap);
+		point_t p = curbp->b_point;
+		char_t buf[4];
+		memcpy(buf, curbp->b_egap, sz);
+		curbp->b_egap += sz;
 		curbp->b_point = pos(curbp, curbp->b_egap);
+		record_undo(curbp, p, sz, 1, buf);
 		curbp->b_flags |= B_MODIFIED;
 	}
 }
@@ -425,6 +437,11 @@ void copy_cut(int cut)
 			curbp->b_egap += nscrap; /* if cut expand gap down */
 			curbp->b_point = pos(curbp, curbp->b_egap); /* set point to after region */
 			curbp->b_flags |= B_MODIFIED;
+			if (curbp->b_point < curbp->b_mark) {
+				record_undo(curbp, curbp->b_point, nscrap, 1, scrap);
+			} else {
+				record_undo(curbp, curbp->b_mark, nscrap, 1, scrap);
+			}
 			msg("%ld bytes cut.", nscrap);
 		} else {
 			msg("%ld bytes copied.", nscrap);
@@ -440,10 +457,12 @@ void paste()
 	if (nscrap <= 0) {
 		msg("Scrap is empty.  Nothing to paste.");
 	} else if (nscrap < curbp->b_egap - curbp->b_gap || growgap(curbp, nscrap)) {
+		point_t p = curbp->b_point;
 		curbp->b_point = movegap(curbp, curbp->b_point);
 		memcpy(curbp->b_gap, scrap, nscrap * sizeof (char_t));
 		curbp->b_gap += nscrap;
 		curbp->b_point = pos(curbp, curbp->b_egap);
+		record_undo(curbp, p, nscrap, 0, scrap);
 		curbp->b_flags |= B_MODIFIED;
 	}
 }

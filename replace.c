@@ -78,10 +78,8 @@ void query_replace(void)
 		
 		if (rlen > slen) {
 			movegap(curbp, found);
-			/*check enough space in gap left */
-			if (rlen - slen < curbp->b_egap - curbp->b_gap)
+			if (rlen - slen > curbp->b_egap - curbp->b_gap)
 				growgap(curbp, rlen - slen);
-			/* shrink gap right by r - s */
 			curbp->b_gap = curbp->b_gap + (rlen - slen);
 		} else if (slen > rlen) {
 			movegap(curbp, found);

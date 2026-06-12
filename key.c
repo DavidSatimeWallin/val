@@ -71,6 +71,9 @@ keymap_t keymap[] = {
 	{"resize resize-terminal   ", "\x9A",     resize_terminal },
 	{"F10 menu                ", "\x1B\x5B\x32\x31\x7E", menu_activate },
 	{"C-x m menu              ", "\x18\x6D", menu_activate },
+	{"C-_ undo                ", "\x1F", undo },
+	{"C-x u undo              ", "\x18\x75", undo },
+	{"esc _ redo             ", "\x1B\x5F", redo },
 	{"K_ERROR                  ", NULL, NULL }
 };
 

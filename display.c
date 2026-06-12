@@ -28,9 +28,9 @@ static void compute_line_info(buffer_t *bp, int *page_line, int *cursor_line, in
 }
 
 /* Reverse scan for start of logical line containing offset */
-point_t lnstart(buffer_t *bp, register point_t off)
+point_t lnstart(buffer_t *bp, point_t off)
 {
-	register char_t *p;
+	char_t *p;
 	do
 		p = ptr(bp, --off);
 	while (bp->b_buf < p && *p != '\n');
@@ -180,7 +180,8 @@ void display(window_t *wp, int flag)
 				wchar_t c;
 				/* reset if invalid multi-byte character */
 				if (mbtowc(&c, (char*)p, 6) < 0) mbtowc(NULL, NULL, 0);
-				int w = wcwidth(c) < 0 ? 1 : wcwidth(c);
+				int w = wcwidth(c);
+				if (w < 0) w = 1;
 				if (on_cursor_line) {
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
 					for (int x = 0; x < w; x++) addch(' ');
@@ -295,8 +296,8 @@ void modeline(window_t *wp)
 	sprintf(temp, "%c%c%c Val: %c%c %s",  lch,och,mch,lch,lch, get_buffer_name(wp->w_bufp));
 	addstr(temp);
 
-	for (i = strlen(temp) + 1; i <= COLS; i++)
-		addch(lch);
+	i = strlen(temp) + 1;
+	while (i <= COLS) { addch(lch); i++; }
 }
 
 void dispmsg()

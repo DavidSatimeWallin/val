@@ -22,6 +22,10 @@ void buffer_init(buffer_t *bp)
 	bp->b_egap = NULL;
 	bp->b_next = NULL;
 	bp->b_fname[0] = '\0';
+	bp->b_h_state = ID_DEFAULT;
+	bp->b_h_next_state = ID_DEFAULT;
+	bp->b_h_skip_count = 0;
+	undo_init(bp);
 }
 
 /* Find a buffer by filename or create if requested */
@@ -84,7 +88,8 @@ int delete_buffer (buffer_t *bp)
 		sb->b_next = bp->b_next;
 	}
 
-	/* now we can delete */
+	assert(bp->b_cnt == 0);
+	undo_free_all(bp);
 	free(bp->b_buf);
 	free(bp);
 	return TRUE;

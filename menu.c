@@ -24,6 +24,8 @@ static const menu_item_t file_items[] = {
 };
 
 static const menu_item_t edit_items[] = {
+	{"C-_",   "Undo",           undo      },
+	{"M-_",   "Redo",           redo      },
 	{"C-w",   "Cut Region",     cut       },
 	{"M-w",   "Copy Region",    copy      },
 	{"C-y",   "Paste",          paste     },
@@ -78,7 +80,7 @@ static const menu_item_t tools_items[] = {
 #define N_GROUPS 6
 static const menu_t menu_groups[N_GROUPS] = {
 	{"File",     6, file_items   },
-	{"Edit",     7, edit_items   },
+	{"Edit",     9, edit_items   },
 	{"Navigate", 14, nav_items    },
 	{"Search",   3, search_items },
 	{"Buffer",   5, buffer_items },

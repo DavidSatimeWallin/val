@@ -1,20 +1,19 @@
 /* header.h, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE 700
 #include <locale.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
 #include <curses.h>
 #include <stdio.h>
-#include <sys/types.h>
+
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
-int mkstemp(char *);
 
-#define VERSION	 "Val 2.1.0, Public Domain, 2026 by David Satime Wallin,  No warranty."
+#define VERSION	 "Val 2.3.0, Public Domain, 2026 by David Satime Wallin,  No warranty."
 #define PROG_NAME "val"
 #define B_MODIFIED	0x01		/* modified buffer */
 #define B_OVERWRITE	0x02		/* overwrite mode */
@@ -34,7 +33,6 @@ int mkstemp(char *);
 #define ID_COMMENT     2
 #define ID_MODELINE     3
 #define ID_CURSOR_LINE  4
-#define ID_MENU_BAR    5
 
 typedef unsigned char char_t;
 typedef long point_t;
@@ -66,6 +64,12 @@ typedef struct buffer_t
 	char b_fname[NAME_MAX + 1]; /* filename */
 	char b_bname[STRBUF_S];   /* buffer name */
 	char b_flags;             /* buffer flags */
+	int b_h_state;            /* highlight state */
+	int b_h_next_state;       /* next highlight state */
+	int b_h_skip_count;       /* chars to skip in highlight */
+	struct undo_rec_t *b_undo_head;
+	struct undo_rec_t *b_redo_head;
+	int b_no_undo;            /* suppress undo recording */
 } buffer_t;
 
 typedef struct window_t
@@ -177,7 +181,7 @@ extern void query_replace(void);
 extern point_t line_to_point(int);
 extern point_t search_forward(buffer_t *, point_t, char *);
 extern point_t search_backwards(buffer_t *, point_t, char *);
-extern void update_search_prompt(char *, char *);
+
 extern void display_search_result(point_t, int, char *, char *);
 extern buffer_t* find_buffer(char *, int);
 extern void buffer_init(buffer_t *);
@@ -188,7 +192,6 @@ extern int modified_buffers(void);
 extern void killbuffer(void);
 extern char* get_buffer_name(buffer_t *);
 extern void get_line_stats(int *, int *);
-extern void query_replace(void);
 extern window_t *new_window();
 extern void one_window(window_t *);
 extern void split_window();
@@ -211,5 +214,10 @@ extern void gotodef();
 extern void show_git_diff();
 extern void show_keyboard_help();
 extern void indent_to_tabs();
+extern void undo_init(buffer_t *);
+extern void undo_free_all(buffer_t *);
+extern void record_undo(buffer_t *, point_t, int, int, char_t *);
+extern void undo(void);
+extern void redo(void);
 extern void draw_menu_bar(void);
 extern void menu_activate(void);

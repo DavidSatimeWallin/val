@@ -208,7 +208,6 @@ extern void shell_cmd();
 extern void center_cursor();
 extern void funclist();
 extern void gotodef();
-extern void ollama_chat_view();
 extern void show_git_diff();
 extern void show_keyboard_help();
 extern void indent_to_tabs();

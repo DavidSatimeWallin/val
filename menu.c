@@ -69,7 +69,6 @@ static const menu_item_t tools_items[] = {
 	{"M-,",   "Go to Def",       gotodef          },
 	{"M-.",   "FZF Find File",   fzf_find_file    },
 	{"M--",   "Shell Command",   shell_cmd        },
-	{"M-o",   "Ollama Chat",     ollama_chat_view },
 	{"M-d",   "Git Diff",        show_git_diff    },
 	{"C-x h", "Keyboard Help",   show_keyboard_help},
 	{"C-l",   "Refresh",         redraw           },
@@ -83,7 +82,7 @@ static const menu_t menu_groups[N_GROUPS] = {
 	{"Navigate", 14, nav_items    },
 	{"Search",   3, search_items },
 	{"Buffer",   5, buffer_items },
-	{"Tools",    9, tools_items  },
+	{"Tools",    8, tools_items  },
 };
 
 static int menu_xpos[N_GROUPS];

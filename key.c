@@ -39,7 +39,6 @@ keymap_t keymap[] = {
 	{"C-x h keyboard-help      ", "\x18\x68", show_keyboard_help },
 	{"C-x r i indent-to-tabs   ", "\x18\x72\x69", indent_to_tabs },
 	{"esc l funclist           ", "\x1B\x6C", funclist },
-	{"esc o ollama             ", "\x1B\x6F", ollama_chat_view },
 	{"esc d git-diff           ", "\x1B\x64", show_git_diff },
 	{"esc b back-word          ", "\x1B\x62", wleft },
 	{"esc f forward-word       ", "\x1B\x66", wright },

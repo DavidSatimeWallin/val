@@ -69,7 +69,9 @@ keymap_t keymap[] = {
 	{"end end-of-line          ", "\x1B\x5B\x46", lnend },
 	{"pgup backward-page       ", "\x1B\x5B\x35\x7E",pgup }, /* PgUp key */
 	{"pgdn forward-page        ", "\x1B\x5B\x36\x7E", pgdown }, /* PgDn key */
-        {"resize resize-terminal   ", "\x9A",     resize_terminal },
+	{"resize resize-terminal   ", "\x9A",     resize_terminal },
+	{"F10 menu                ", "\x1B\x5B\x32\x31\x7E", menu_activate },
+	{"C-x m menu              ", "\x18\x6D", menu_activate },
 	{"K_ERROR                  ", NULL, NULL }
 };
 

@@ -324,6 +324,7 @@ void update_display()
 	window_t *wp;
 	buffer_t *bp;
 
+	draw_menu_bar();
 	bp = curwp->w_bufp;
 	bp->b_cpoint = bp->b_point; /* cpoint only ever set here */
 	

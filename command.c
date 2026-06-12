@@ -191,8 +191,9 @@ void wleft()
 
 void pgdown()
 {
+	int rel_row = curbp->b_row - curwp->w_top;
 	curbp->b_page = curbp->b_point = upup(curbp, curbp->b_epage);
-	while (0 < curbp->b_row--)
+	while (0 < rel_row--)
 		down();
 	curbp->b_epage = pos(curbp, curbp->b_ebuf);
 }

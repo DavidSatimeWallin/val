@@ -20,7 +20,7 @@ RM      = rm
 E       =
 O       = .o
 
-OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) ollama$(O) diff$(O) help$(O) main$(O)
+OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) ollama$(O) diff$(O) help$(O) menu$(O) main$(O)
 
 val$(E) : $(OBJ)
 	$(LD) $(LDFLAGS) -o val$(E) $(OBJ) $(LIBS)
@@ -69,6 +69,9 @@ diff$(O): diff.c header.h
 
 help$(O): help.c header.h
 	$(CC) $(CFLAGS) -c help.c
+
+menu$(O): menu.c header.h
+	$(CC) $(CFLAGS) -c menu.c
 
 main$(O): main.c header.h
 	$(CC) $(CFLAGS) -c main.c

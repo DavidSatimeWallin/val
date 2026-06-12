@@ -34,6 +34,7 @@ int mkstemp(char *);
 #define ID_COMMENT     2
 #define ID_MODELINE     3
 #define ID_CURSOR_LINE  4
+#define ID_MENU_BAR    5
 
 typedef unsigned char char_t;
 typedef long point_t;
@@ -211,3 +212,5 @@ extern void ollama_chat_view();
 extern void show_git_diff();
 extern void show_keyboard_help();
 extern void indent_to_tabs();
+extern void draw_menu_bar(void);
+extern void menu_activate(void);

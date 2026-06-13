@@ -1,4 +1,4 @@
-/* window.c, Val Emacs, Hugh Barney, Public Domain, 2015 */
+/* window.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2015 */
 
 #include "header.h"
 

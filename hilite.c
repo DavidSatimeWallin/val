@@ -1,4 +1,4 @@
-/* hlite.c, generic syntax highlighting, Val Emacs, Hugh Barney, Public Domain, 2016 */
+/* hlite.c, generic syntax highlighting, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016 */
 
 #include "header.h"
 

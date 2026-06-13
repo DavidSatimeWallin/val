@@ -1,4 +1,4 @@
-/* replace.c, Val Emacs, Hugh Barney, Public Domain, 2016 */
+/* replace.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016 */
 
 #include <string.h>
 #include "header.h"

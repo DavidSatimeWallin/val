@@ -2,7 +2,7 @@
 
 A tiny terminal text editor with Emacs-style key bindings.
 
-Originally based on [Atto](https://github.com/hughbarney/atto) by Hugh Barney, which itself derives from Anthony Howe's public domain editor.
+Originally based on [Atto](https://github.com/hughbarney/atto) by Hugh Barney, which itself derives from Anthony Howe's public domain editor. Val Emacs is maintained by David Satime Wallin.
 
 ## Disclaimer
 

@@ -1,4 +1,12 @@
-/* menu.c, Val Emacs menu bar, Public Domain, 2026 */
+/*
+ * menu.c - persistent top menu and keyboard-driven dropdowns.
+ *
+ * Menu entries call the same void(void) command functions as key bindings, so
+ * the menu adds no parallel command implementation.  The bar reserves rows 0
+ * and 1; dropdowns temporarily overlay editor content and redraw on exit.
+ *
+ * Public Domain, 2026.
+ */
 
 #include "header.h"
 
@@ -93,6 +101,7 @@ static int menu_group = 0;
 static int menu_item = 0;
 static int show_dropdown = 0;
 
+/* Derive horizontal positions from labels so spacing has one source of truth. */
 static void calc_menu_positions(void)
 {
 	int x = 1;
@@ -102,6 +111,7 @@ static void calc_menu_positions(void)
 	}
 }
 
+/* Draw only the persistent bar; update_display() paints the editor below it. */
 void draw_menu_bar(void)
 {
 	if (LINES < 5) return;
@@ -192,6 +202,11 @@ static void draw_dropdown(void)
 	attrset(A_NORMAL);
 }
 
+/*
+ * Run a small modal event loop until the user cancels or invokes a command.
+ * keypad mode lets ncurses decode arrows while the rest of Val keeps its
+ * historical byte-sequence key decoder.
+ */
 void menu_activate(void)
 {
 	if (LINES < 5) return;

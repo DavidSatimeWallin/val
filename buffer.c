@@ -1,9 +1,18 @@
-/* buffer.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2015 */
+/*
+ * buffer.c - buffer lifetime and the global buffer list.
+ *
+ * A buffer owns its gap-buffer allocation and undo/redo history.  Windows only
+ * reference buffers, so b_cnt must reach zero before delete_buffer() is called.
+ * The list is kept sorted by filename to make buffer cycling deterministic.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2015.
+ */
 
 #include <assert.h>
 #include <string.h>
 #include "header.h"
 
+/* Establish every invariant required by gap, display, and undo code. */
 void buffer_init(buffer_t *bp)
 {
 	bp->b_mark = NOMARK;
@@ -95,6 +104,7 @@ int delete_buffer (buffer_t *bp)
 	return TRUE;
 }
 
+/* Cycle the current window to the next buffer, wrapping at the list tail. */
 void next_buffer()
 {
 	assert(curbp != NULL);
@@ -120,6 +130,7 @@ int count_buffers()
 	return i;
 }
 
+/* Return TRUE as soon as any buffer has unsaved changes. */
 int modified_buffers()
 {
 	buffer_t* bp;

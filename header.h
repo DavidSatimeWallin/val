@@ -1,4 +1,18 @@
-/* header.h, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * header.h - shared data model and cross-module interface for Val.
+ *
+ * The editor has three central data structures:
+ *   - buffer_t owns text (as a gap buffer), file metadata, and undo history;
+ *   - window_t owns one on-screen view of a buffer;
+ *   - keymap_t maps terminal byte sequences to void(void) commands.
+ *
+ * Text positions are signed logical BYTE offsets.  UTF-8 character boundaries
+ * are handled by movement/display helpers, not by changing the storage unit.
+ * Most commands operate on the global current buffer/window to retain the
+ * small, direct architecture inherited from Anthony's Editor.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ */
 #define _XOPEN_SOURCE 700
 #include <locale.h>
 #include <stdlib.h>
@@ -37,12 +51,17 @@
 typedef unsigned char char_t;
 typedef long point_t;
 
+/* One terminal sequence and the command it invokes. */
 typedef struct keymap_t {
 	char *key_desc;                 /* name of bound function */
 	char *key_bytes;		/* the string of bytes when this key is pressed */
 	void (*func)(void);
 } keymap_t;
 
+/*
+ * Editable document.  [b_gap, b_egap) is unused capacity; bytes on either side
+ * form the logical text.  b_page/b_epage delimit the currently rendered page.
+ */
 typedef struct buffer_t
 {
 	struct buffer_t *b_next;  /* Link to next buffer_t */
@@ -72,6 +91,7 @@ typedef struct buffer_t
 	int b_no_undo;            /* suppress undo recording */
 } buffer_t;
 
+/* A screen view with cursor/page state independent of other views. */
 typedef struct window_t
 {
 	struct window_t *w_next;   /* Next window */
@@ -102,6 +122,7 @@ extern window_t *wheadp;
  */
 #define MAX_SIZE_T      ((unsigned long) (size_t) ~0)
 
+/* Global editor state owned by main.c. */
 extern int done;                /* Quit flag. */
 extern int msgflag;             /* True if msgline should be displayed. */
 extern point_t nscrap;          /* Length of scrap buffer. */
@@ -115,8 +136,10 @@ extern keymap_t *key_map;       /* Command key mappings. */
 extern keymap_t keymap[];
 extern keymap_t *key_return;    /* Command key return */
 
+/* Process lifecycle and message reporting. */
 extern _Noreturn void fatal(char *);
 extern void msg(char *, ...);
+/* Rendering and screen-coordinate helpers. */
 extern void display(window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
@@ -128,10 +151,12 @@ extern point_t segstart(buffer_t *, point_t, point_t);
 extern point_t segnext(buffer_t *, point_t, point_t);
 extern point_t upup(buffer_t *, point_t);
 extern point_t dndn(buffer_t *, point_t);
+/* Keyboard decoding and minibuffer input. */
 extern char_t *get_key(keymap_t *, keymap_t **);
 extern int getinput(char *, char *, int, int);
 extern int getfilename(char *, char *, int);
 extern void display_prompt_and_response(char *, char *);
+/* Gap-buffer storage and file I/O. */
 extern int growgap(buffer_t *, point_t);
 extern point_t movegap(buffer_t *, point_t);
 extern point_t pos(buffer_t *, char_t *);
@@ -140,6 +165,7 @@ extern int posix_file(char *);
 extern int save(char *);
 extern int load_file(char *);
 extern int insert_file(char *, int);
+/* Editing, movement, and user-visible commands. */
 extern void backsp(void);
 extern void iblock(void);
 extern void deactivate_mark(void);
@@ -181,6 +207,7 @@ extern point_t search_forward(buffer_t *, point_t, char *);
 extern point_t search_backwards(buffer_t *, point_t, char *);
 
 extern void display_search_result(point_t, int, char *, char *);
+/* Buffer and window lifetime management. */
 extern buffer_t* find_buffer(char *, int);
 extern void buffer_init(buffer_t *);
 extern int delete_buffer(buffer_t *);
@@ -201,6 +228,7 @@ extern void w2b(window_t *);
 extern void b2w(window_t *);
 extern void associate_b2w(buffer_t *, window_t *);
 extern void disassociate_b(window_t *);
+/* Syntax highlighting and auxiliary modal tools. */
 extern void set_parse_state(buffer_t *, point_t);
 extern int parse_text(buffer_t *, point_t);
 extern void resize_terminal();

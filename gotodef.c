@@ -1,4 +1,13 @@
-/* gotodef.c, Go to definition, Val Emacs, Public Domain */
+/*
+ * gotodef.c - project-wide, grep-based definition navigation.
+ *
+ * The command extracts the identifier under point, asks grep for likely
+ * declarations in supported source files, and presents ambiguous results in a
+ * modal list.  This deliberately favors a transparent external command over a
+ * language-server dependency.  Search output is bounded before display.
+ *
+ * Public Domain.
+ */
 
 #include "header.h"
 
@@ -20,6 +29,7 @@ static int is_ident_char(char_t c)
 	return isalnum(c) || c == '_';
 }
 
+/* Copy the complete ASCII-style identifier surrounding point into word. */
 static int get_word_at_point(buffer_t *bp, char *word, int maxlen)
 {
 	point_t end_p = pos(bp, bp->b_ebuf);
@@ -46,6 +56,7 @@ static int get_word_at_point(buffer_t *bp, char *word, int maxlen)
 	return i;
 }
 
+/* Run the bounded project search and parse filename:line:text results. */
 static void search_definitions(const char *word)
 {
 	char command[4096];
@@ -114,6 +125,7 @@ static void search_definitions(const char *word)
 	pclose(fp);
 }
 
+/* Reuse an existing buffer when possible, then center the requested line. */
 static void open_file_at_line(const char *fname, int line_no)
 {
 	point_t p;
@@ -146,6 +158,7 @@ static void open_file_at_line(const char *fname, int line_no)
 	}
 }
 
+/* Resolve the identifier under point or open a chooser when matches compete. */
 void gotodef()
 {
 	char word[MAX_WORD_LEN];

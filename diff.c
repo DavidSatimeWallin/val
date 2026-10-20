@@ -1,10 +1,18 @@
-/* diff.c, Git diff functionality, Val Emacs */
+/*
+ * diff.c - modal viewer for the current file's unstaged Git diff.
+ *
+ * Git output is captured in one fixed buffer.  diff_lines stores offsets into
+ * that buffer rather than duplicating strings.  Parsed hunk line numbers allow
+ * Enter to return to the corresponding line in the edited buffer.  Limits are
+ * intentional: this interactive summary truncates very large diffs safely.
+ */
 
 #include "header.h"
 
 #define DIFF_BUF     65536
 #define MAX_DIFF_LINES 5000
 
+/* Metadata for one line; offset/len refer directly into diff_output. */
 typedef struct {
     int offset;
     int len;
@@ -105,6 +113,7 @@ static void move_diff_cursor(int delta)
     draw_diff_view();
 }
 
+/* Split output into lines, classify them, and map them to source line numbers. */
 static void parse_diff_lines(void)
 {
     diff_nlines = 0;
@@ -176,6 +185,7 @@ static void goto_diff_line(void)
     curwp->w_update = TRUE;
 }
 
+/* Run git relative to the file's directory and capture its unstaged diff. */
 static int get_git_diff(const char *filename)
 {
     char command[1024];
@@ -217,6 +227,7 @@ static int get_git_diff(const char *filename)
     return offset > 0;
 }
 
+/* Open the modal viewer, process navigation, then restore the editor screen. */
 void show_git_diff(void)
 {
     char *fname = curbp->b_fname;

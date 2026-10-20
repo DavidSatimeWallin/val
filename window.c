@@ -1,4 +1,13 @@
-/* window.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2015 */
+/*
+ * window.c - screen layout and buffer/window association management.
+ *
+ * A window stores an independent view (point, mark, page, and screen geometry)
+ * of a buffer.  Multiple windows may reference one buffer; b_cnt records those
+ * references.  The first two terminal rows belong to the top menu and the last
+ * two rows belong to the modeline and message line.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2015.
+ */
 
 #include "header.h"
 
@@ -8,7 +17,8 @@ window_t* new_window()
 {
 	window_t *wp = (window_t *)malloc(sizeof(window_t));
 	
-	assert(wp != NULL); /* call fatal instead XXX */
+	/* Allocation failure is unrecoverable because editing requires a view. */
+	assert(wp != NULL);
 	wp->w_next = NULL;
 	wp->w_bufp = NULL;
 	wp->w_point = 0;
@@ -20,6 +30,7 @@ window_t* new_window()
 	return wp;
 }
 
+/* Expand wp over all rows not reserved by the menu, modeline, and messages. */
 void one_window(window_t *wp)
 {
 	wp->w_top = 2;
@@ -27,6 +38,7 @@ void one_window(window_t *wp)
 	wp->w_next = NULL;
 }
 
+/* Split the current view horizontally; both views initially share a buffer. */
 void split_window()
 {
 	window_t *wp, *wp2;
@@ -90,6 +102,7 @@ void free_other_windows(window_t *winp)
 	one_window(winp);
 }
 
+/* Attach/detach helpers are the only places that maintain b_cnt. */
 void associate_b2w(buffer_t *bp, window_t *wp) {
 	assert(bp != NULL);
 	assert(wp != NULL);

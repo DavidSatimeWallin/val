@@ -1,10 +1,20 @@
-/* undo.c, Val Emacs, Public Domain, 2026 */
+/*
+ * undo.c - per-buffer undo and redo stacks.
+ *
+ * Records describe the original edit: UNDO_INSERT means text was inserted and
+ * must be deleted to undo it; UNDO_DELETE means saved text must be reinserted.
+ * Moving a record between stacks implements redo without copying it.  Adjacent
+ * typing and backspacing are coalesced to keep normal editing compact.
+ *
+ * Public Domain, 2026.
+ */
 
 #include "header.h"
 
 #define UNDO_INSERT 0
 #define UNDO_DELETE 1
 
+/* Text is heap-owned because deleted bytes no longer exist in the buffer. */
 typedef struct undo_rec_t {
 	struct undo_rec_t *next;
 	point_t point;
@@ -90,6 +100,10 @@ static void undo_delete_at(buffer_t *bp, point_t p, int len)
 	bp->b_point = pos(bp, bp->b_egap);
 }
 
+/*
+ * Record an edit and invalidate redo history.  Consecutive edits of the same
+ * type are merged when their ranges touch in the expected typing direction.
+ */
 void record_undo(buffer_t *bp, point_t point, int len, int type, char_t *text)
 {
 	if (bp->b_no_undo || len == 0)
@@ -122,6 +136,7 @@ append:
 	undo_commit(bp, undo_alloc(point, len, type, text));
 }
 
+/* Apply the inverse of the newest edit and move its record to redo. */
 void undo(void)
 {
 	buffer_t *bp = curbp;
@@ -145,6 +160,7 @@ void undo(void)
 	msg("Undo");
 }
 
+/* Reapply the newest undone edit and move its record back to undo. */
 void redo(void)
 {
 	buffer_t *bp = curbp;

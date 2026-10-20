@@ -1,7 +1,15 @@
-/* help.c, Keyboard shortcuts help browser, Val Emacs */
+/*
+ * help.c - generate a keyboard-reference buffer from the live keymap.
+ *
+ * Keeping help text in keymap[] prevents documentation from drifting away from
+ * actual bindings.  A temporary file is used so the normal file-loading and
+ * buffer-display paths can present the generated reference without a special
+ * viewer implementation.
+ */
 
 #include "header.h"
 
+/* Materialize key descriptions, switch to that buffer, and request repaint. */
 void show_keyboard_help(void)
 {
     char tmpfile[64];

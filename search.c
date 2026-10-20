@@ -1,10 +1,21 @@
-/* search.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * search.c - incremental prompt handling and byte-exact buffer search.
+ *
+ * Searches compare stored UTF-8 bytes, which is correct for exact matching and
+ * avoids locale-dependent case folding.  Forward search returns the position
+ * after a match; backward search preserves the historical cursor convention
+ * expected by query-replace and display_search_result().
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include "header.h"
 
 #define FWD_SEARCH 1
 #define REV_SEARCH 2
 
+/* Read search text and repeat forward/backward searches until dismissed. */
 void search()
 {
 	int cpos = 0;	
@@ -76,6 +87,7 @@ void display_search_result(point_t found, int dir, char *prompt, char *search)
 	}
 }
 
+/* Return the byte offset immediately after the first match, or -1. */
 point_t search_forward(buffer_t *bp, point_t start_p, char *stext)
 {
 	point_t end_p = pos(bp, bp->b_ebuf);
@@ -96,6 +108,7 @@ point_t search_forward(buffer_t *bp, point_t start_p, char *stext)
 	return -1;
 }
 
+/* Search toward the start of the buffer and return -1 when absent. */
 point_t search_backwards(buffer_t *bp, point_t start_p, char *stext)
 {
 	point_t p,pp;

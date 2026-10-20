@@ -1,8 +1,17 @@
-/* complete.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016 */
+/*
+ * complete.c - filename minibuffer with shell-assisted tab completion.
+ *
+ * Completion writes shell expansion results to a private temporary file, then
+ * cycles through space-separated candidates on repeated Tab presses.  The
+ * caller supplies the destination capacity; every direct append honors it.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ */
 
 #include "header.h"
 
 /* basic filename completion, based on code in uemacs/PK */
+/* Return TRUE for a non-empty accepted filename and FALSE when cancelled. */
 int getfilename(char *prompt, char *buf, int nbuf)
 {
 	static char temp_file[] = TEMPFILE;

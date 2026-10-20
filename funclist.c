@@ -1,4 +1,13 @@
-/* funclist.c, Function list navigation, Val Emacs, Public Domain */
+/*
+ * funclist.c - language-aware function outline for the current buffer.
+ *
+ * This is intentionally a lightweight line recognizer, not a parser.  Each
+ * supported language supplies a conservative declaration predicate.  Matches
+ * retain source line numbers, can be filtered case-insensitively, and jump via
+ * the same line_to_point() path used by other navigation commands.
+ *
+ * Public Domain.
+ */
 
 #include "header.h"
 
@@ -10,6 +19,7 @@ typedef struct {
 	char text[MAX_LINE_LEN];
 } func_entry_t;
 
+/* Detection is filename-extension based; unknown types fail with a message. */
 typedef enum {
 	LANG_UNKNOWN, LANG_C, LANG_GO, LANG_VLANG, LANG_PYTHON,
 	LANG_RUBY, LANG_PHP, LANG_ZIG, LANG_CRYSTAL, LANG_RUST
@@ -151,6 +161,7 @@ static int is_rust_func(const char *line)
 	       has_prefix(p, "impl ") || has_prefix(p, "impl<");
 }
 
+/* Scan logical lines without flattening or modifying the gap buffer. */
 static void scan_buffer(buffer_t *bp, lang_t lang)
 {
 	char line[MAX_LINE_LEN];
@@ -204,6 +215,7 @@ static int strcasestr_match(const char *haystack, const char *needle)
 static int matched[MAX_FUNCS];
 static int nmatched;
 
+/* matched[] stores indexes into funcs[], avoiding copies while filtering. */
 static void refilter(const char *filter)
 {
 	nmatched = 0;
@@ -213,6 +225,7 @@ static void refilter(const char *filter)
 	}
 }
 
+/* Display the modal, searchable outline and jump on Enter. */
 void funclist()
 {
 	lang_t lang = detect_language(curbp->b_fname);

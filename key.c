@@ -1,4 +1,14 @@
-/* key.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * key.c - key bindings, escape-sequence decoding, and minibuffer input.
+ *
+ * keymap[] is both the command dispatch table and the source for keyboard help.
+ * get_key() incrementally matches terminal byte sequences.  Unmatched bytes are
+ * returned as text; UTF-8 input is collected as one complete sequence so the
+ * renderer never observes a partially inserted character.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include "header.h"
 
@@ -8,7 +18,7 @@ keymap_t keymap[] = {
 	{"C-b backward-char        ", "\x02", left },
 	{"C-d delete               ", "\x04", delete },
 	{"C-e end-of-line          ", "\x05", lnend },
-	{"C-f foward-char          ", "\x06", right },
+	{"C-f forward-char         ", "\x06", right },
 	{"C-h backspace            ", "\x08", backsp },
 	{"esc j jump               ", "\x1B\x6A", jump },
 	{"C-k kill-to-eol          ", "\x0B", killtoeol },
@@ -78,6 +88,14 @@ keymap_t keymap[] = {
 	{"K_ERROR                  ", NULL, NULL }
 };
 
+/*
+ * Decode one command or text character.
+ *
+ * On a command match, *key_return points to its keymap entry and the returned
+ * string is empty.  Otherwise *key_return is NULL and the returned static
+ * buffer contains text bytes.  Prefix bytes that fail to form a command are
+ * replayed on later calls through record; callers must not retain the pointer.
+ */
 char_t *get_key(keymap_t *keys, keymap_t **key_return)
 {
 	keymap_t *k;
@@ -150,6 +168,7 @@ char_t *get_key(keymap_t *keys, keymap_t **key_return)
 	return (record++);
 }
 
+/* Read an editable, bounded response on the terminal message line. */
 int getinput(char *prompt, char *buf, int nbuf, int flag)
 {
 	int cpos = 0;

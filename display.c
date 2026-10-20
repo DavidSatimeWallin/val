@@ -1,4 +1,14 @@
-/* display.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * display.c - terminal rendering and logical-to-screen coordinate conversion.
+ *
+ * Buffer positions count UTF-8 bytes, while terminal columns count displayed
+ * character cells.  This module is the boundary between those units.  It also
+ * computes wrapped screen segments, relative line-number gutters, syntax and
+ * region attributes, modelines, and the final hardware cursor position.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include "header.h"
 
@@ -12,6 +22,7 @@ static int num_digits(int n)
 	return d;
 }
 
+/* One linear scan supplies all line numbers needed for gutter rendering. */
 static void compute_line_info(buffer_t *bp, int *page_line, int *cursor_line, int *last_line)
 {
 	point_t end_p = pos(bp, bp->b_ebuf);
@@ -118,6 +129,10 @@ static void print_gutter(int row, int line_no, int cursor_line, int gutter_w, in
 		mvprintw(row, 0, "%*s ", gutter_w - 1, "");
 }
 
+/*
+ * Paint one window.  flag requests message-line output and a final refresh;
+ * multi-window updates defer those operations until every view is coherent.
+ */
 void display(window_t *wp, int flag)
 {
 	char_t *p;
@@ -156,7 +171,7 @@ void display(window_t *wp, int flag)
 	i = wp->w_top;
 	j = 0;
 	bp->b_epage = bp->b_page;
-	set_parse_state(bp, bp->b_epage); /* are we in a multline comment ? */
+	set_parse_state(bp, bp->b_epage); /* Reconstruct whether this page starts inside a multiline comment. */
 
 	line_no = page_line;
 	on_cursor_line = (line_no == cursor_line);
@@ -328,6 +343,10 @@ void display_prompt_and_response(char *prompt, char *response)
 	clrtoeol();
 }
 
+/*
+ * Synchronize buffer state with all visible windows, then refresh once.  Views
+ * of the current buffer must be updated because an edit changes their offsets.
+ */
 void update_display()
 {   
 	window_t *wp;

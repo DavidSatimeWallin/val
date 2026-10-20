@@ -41,6 +41,13 @@ Then:
     make
     sudo make install
 
+## Developer Documentation
+
+See [`docs/architecture.md`](docs/architecture.md) for the module map, data
+ownership rules, gap-buffer invariants, UTF-8 coordinate model, display flow,
+and guidance for adding commands safely. The source files also document their
+module responsibilities and non-obvious invariants directly beside the code.
+
 ## Key Bindings
 
 ### Movement

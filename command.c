@@ -1,4 +1,14 @@
-/* command.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * command.c - editor commands that mutate text, point, mark, or mode state.
+ *
+ * Commands have the uniform void(void) signature required by keymap_t.  They
+ * operate on curbp/curwp and report recoverable failures through msg().  Text
+ * offsets are UTF-8 byte offsets; movement and deletion helpers must therefore
+ * advance by complete encoded characters rather than individual bytes.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include "header.h"
 
@@ -12,6 +22,11 @@ void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
 void resize_terminal() { one_window(curwp); }
 
+/*
+ * Normalize leading runs of eight spaces into tabs.  The transformation is
+ * built in temporary storage first, so reading from the gap buffer cannot be
+ * invalidated by writes to the same allocation.
+ */
 void indent_to_tabs(void)
 {
 	point_t orig_point = curbp->b_point;
@@ -214,6 +229,7 @@ void wright()
 		++curbp->b_point;
 }
 
+/* Insert one byte; insert() groups all bytes of one UTF-8 input character. */
 static void insert_char(char_t c)
 {
 	assert(curbp->b_gap <= curbp->b_egap);
@@ -417,6 +433,10 @@ void killtoeol()
 	}
 }
 
+/*
+ * Copy the marked byte range into scrap.  If cut is true, enlarge the gap over
+ * that range after copying it.  Point/mark order is normalized locally.
+ */
 void copy_cut(int cut)
 {
 	char_t *p;

@@ -1,9 +1,17 @@
-/* replace.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016 */
+/*
+ * replace.c - interactive query-replace for the current buffer.
+ *
+ * Search and replacement lengths are byte counts, matching the gap buffer's
+ * coordinate system and preserving arbitrary UTF-8 text.  Replacement first
+ * resizes the gap around the match and then copies the new bytes in place.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ */
 
 #include <string.h>
 #include "header.h"
 
-/*search for a string and replace it with another string */
+/* Ask before each match; '!' switches to replacing all remaining matches. */
 void query_replace(void)
 {
 	point_t o_point = curbp->b_point;
@@ -76,6 +84,10 @@ void query_replace(void)
 			}
 		}
 		
+		/*
+		 * Keep the logical start fixed while changing the physical gap size by
+		 * the difference between the old and new byte lengths.
+		 */
 		if (rlen > slen) {
 			movegap(curbp, found);
 			if (rlen - slen > curbp->b_egap - curbp->b_gap)
@@ -93,7 +105,7 @@ void query_replace(void)
 		l_point = curbp->b_point;
 		memcpy(ptr(curbp, curbp->b_point), replace, rlen * sizeof (char_t));
 		curbp->b_flags |= B_MODIFIED;
-		curbp->b_point = found - (slen - rlen); /* end of replcement */
+		curbp->b_point = found - (slen - rlen); /* end of replacement */
 		numsub++;
 	}
 

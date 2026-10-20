@@ -1,12 +1,23 @@
-/* main.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * main.c - process startup, global editor state, and the command loop.
+ *
+ * Val is deliberately single-threaded.  Each loop iteration paints the current
+ * state, decodes one key or UTF-8 character, and invokes exactly one command.
+ * Commands communicate short status messages through msg() and mutate the
+ * current buffer/window through the globals declared in header.h.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include "header.h"
 
-int done;
-point_t nscrap;
-char_t *scrap;
+/* Process-wide state.  Keeping it here makes ownership and cleanup explicit. */
+int done;                       /* Set by quit_ask() to leave the main loop. */
+point_t nscrap;                 /* Number of bytes in the cut/copy buffer. */
+char_t *scrap;                  /* Heap-owned cut/copy buffer, or NULL. */
 
-char_t *input;
+char_t *input;                  /* Bytes returned by get_key(); not owned here. */
 int msgflag;
 char msgline[TEMPBUF];
 char temp[TEMPBUF];
@@ -52,6 +63,10 @@ int main(int argc, char **argv)
 	if (!growgap(curbp, CHUNK)) fatal("%s: Failed to allocate required memory.\n");
 	key_map = keymap;
 
+	/*
+	 * Commands do not repaint directly in the normal editing path.  Repainting
+	 * at the top of the loop gives every command a consistent completed frame.
+	 */
 	while (!done) {
 		update_display();
 		input = get_key(key_map, &key_return);

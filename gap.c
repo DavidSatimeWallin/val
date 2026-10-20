@@ -1,4 +1,15 @@
-/* gap.c, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016, Derived from: Anthony's Editor January 93 */
+/*
+ * gap.c - gap-buffer storage, file I/O, and line-number helpers.
+ *
+ * Logical text is split around an unused memory range [b_gap, b_egap).  Bytes
+ * before b_gap and at/after b_egap form one logical sequence.  Buffer positions
+ * are logical byte offsets, not Unicode character indexes; ptr() and pos()
+ * translate between logical offsets and physical addresses.  Editing moves the
+ * gap to point, making nearby insertion and deletion inexpensive.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ * Derived from Anthony's Editor, January 1993.
+ */
 
 #include <sys/stat.h>
 #include "header.h"
@@ -58,6 +69,11 @@ int growgap(buffer_t *bp, point_t n)
 	return (TRUE);
 }
 
+/*
+ * Move the gap to logical offset.  memmove() is required because source and
+ * destination may overlap.  Text order is unchanged; only physical placement
+ * around the gap changes.
+ */
 point_t movegap(buffer_t *bp, point_t offset)
 {
 	char_t *p = ptr(bp, offset);
@@ -78,7 +94,11 @@ point_t movegap(buffer_t *bp, point_t offset)
 	return (pos(bp, bp->b_egap));
 }
 
-/* Given a buffer offset, convert it to a pointer into the buffer */
+/*
+ * Convert a logical byte offset to physical storage.  Offsets at or after the
+ * gap skip its unused bytes.  A negative offset is clamped for callers that
+ * scan backward to the beginning of a buffer.
+ */
 char_t * ptr(buffer_t *bp, point_t offset)
 {
 	if (offset < 0)
@@ -86,7 +106,7 @@ char_t * ptr(buffer_t *bp, point_t offset)
 	return (bp->b_buf+offset + (bp->b_buf + offset < bp->b_gap ? 0 : bp->b_egap-bp->b_gap));
 }
 
-/* Given a pointer into the buffer, convert it to a buffer offset */
+/* Convert a physical pointer back to a logical byte offset. */
 point_t pos(buffer_t *bp, char_t *cp)
 {
 	assert(bp->b_buf <= cp && cp <= bp->b_ebuf);

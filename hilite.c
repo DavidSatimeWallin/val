@@ -1,4 +1,12 @@
-/* hlite.c, generic syntax highlighting, Val Emacs, Public Domain, David Satime Wallin 2026, Hugh Barney, 2016 */
+/*
+ * hilite.c - small state machine for C-style line and block comments.
+ *
+ * Highlight state lives in buffer_t because display() may resume parsing from
+ * an arbitrary page.  set_parse_state() replays bytes before that page, after
+ * which parse_text() advances exactly once for each displayed byte.
+ *
+ * Public Domain, David Satime Wallin 2026, Hugh Barney 2016.
+ */
 
 #include "header.h"
 
@@ -12,6 +20,7 @@ char_t get_at(buffer_t *bp, point_t pt)
 	return (*ptr(bp, pt));
 }
 
+/* Reconstruct parser state immediately before logical byte offset pt. */
 void set_parse_state(buffer_t *bp, point_t pt)
 {
 	point_t po;
@@ -24,6 +33,7 @@ void set_parse_state(buffer_t *bp, point_t pt)
 		parse_text(bp, po);
 }
 
+/* Return the color role for pt and advance the buffer's parser state. */
 int parse_text(buffer_t *bp, point_t pt)
 {
 	if (bp->b_h_skip_count-- > 0)

@@ -2,3 +2,10 @@
 val
 debug.out
 
+# Local terminal/UTF-8 diagnostic artifacts.
+diag.c
+diag2.c
+rawd.py
+ncurses-6.5+20250216/
+ncurses_6.5+20250216*
+

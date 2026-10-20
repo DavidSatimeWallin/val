@@ -140,6 +140,7 @@ void display(window_t *wp, int flag)
 	int page_line, cursor_line, last_line, line_no, at_new_lline, gutter_w;
 	int on_cursor_line;
 	buffer_t *bp = wp->w_bufp;
+	point_t original_page = bp->b_page;
 
 	compute_line_info(bp, &page_line, &cursor_line, &last_line);
 	gutter_w = num_digits(last_line) + 1;
@@ -166,6 +167,15 @@ void display(window_t *wp, int flag)
 		while (0 < i--)
 			bp->b_page = upup(bp, bp->b_page);
 	}
+
+	/*
+	 * Reframing changes the first logical line on screen.  The initial scan was
+	 * needed to determine gutter width before wrapped-line calculations, but its
+	 * page_line describes the old page.  Refresh line metadata before deciding
+	 * which rendered row is the current line.
+	 */
+	if (bp->b_page != original_page)
+		compute_line_info(bp, &page_line, &cursor_line, &last_line);
 
 	move(wp->w_top, 0); /* start from top of window */
 	i = wp->w_top;

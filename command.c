@@ -216,7 +216,7 @@ void wright()
 		++curbp->b_point;
 }
 
-static void insert_char(char c)
+static void insert_char(char_t c)
 {
 	assert(curbp->b_gap <= curbp->b_egap);
 	if (curbp->b_gap == curbp->b_egap && !growgap(curbp, CHUNK))
@@ -239,7 +239,12 @@ static void insert_char(char c)
 
 void insert()
 {
-	insert_char(*input);
+	char_t *p;
+
+	/* get_key() returns a complete UTF-8 character.  Insert all its bytes
+	 * before repainting so display() never sees a partial sequence. */
+	for (p = input; *p != '\0'; ++p)
+		insert_char(*p);
 }
 
 void backsp()

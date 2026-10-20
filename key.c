@@ -96,10 +96,35 @@ char_t *get_key(keymap_t *keys, keymap_t **key_return)
 	record = buffer;
 
 	do {
+		int c;
 		assert(K_BUFFER_LENGTH > record - buffer);
-		/* read and record one byte. */
-		*record++ = (unsigned)getch();
+		/* Read and record one byte. */
+		c = getch();
+		if (c == ERR)
+			continue;
+		*record++ = (char_t)c;
 		*record = '\0';
+
+		/*
+		 * ncurses getch() returns UTF-8 input one byte at a time.  Keep a
+		 * printable multibyte character together so the editor never tries
+		 * to display or edit an incomplete sequence.
+		 */
+		if (record == buffer + 1 && utf8_size(buffer[0]) > 1) {
+			int n = utf8_size(buffer[0]);
+			while (record - buffer < n) {
+				c = getch();
+				if (c == ERR)
+					continue;
+				if (c < 0x80 || c > 0xbf) {
+					ungetch(c);
+					break;
+				}
+				*record++ = (char_t)c;
+			}
+			*record = '\0';
+			return buffer;
+		}
 
 		/* if recorded bytes match any multi-byte sequence... */
 		for (k = keys, submatch = 0; k->key_bytes != NULL; ++k) {

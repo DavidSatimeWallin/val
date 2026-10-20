@@ -184,24 +184,20 @@ void display(window_t *wp, int flag)
 			} else {
 				in_region = 0;
 			}
-			if ( nch > 1) {
+			if (nch > 1) {
 				wchar_t c;
 				/* reset if invalid multi-byte character */
 				if (mbtowc(&c, (char*)p, 6) < 0) mbtowc(NULL, NULL, 0);
 				int w = wcwidth(c);
 				if (w < 0) w = 1;
-				if (in_region) {
+				if (in_region)
 					attrset(A_REVERSE);
-					for (int x = 0; x < w; x++) addch(' ');
-					display_utf8(bp, *p, nch);
-					attrset(A_NORMAL);
-				} else if (on_cursor_line) {
+				else if (on_cursor_line)
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
-					for (int x = 0; x < w; x++) addch(' ');
+				display_utf8(bp, *p, nch);
+				if (in_region || on_cursor_line)
 					attrset(A_NORMAL);
-				}
 				j += w;
-				if (!in_region) display_utf8(bp, *p, nch);
 			} else if (isprint(*p) || *p == '\t' || *p == '\n') {
 				int syn = parse_text(bp, bp->b_epage);
 				int in_func = 0;

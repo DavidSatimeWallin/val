@@ -3,6 +3,7 @@
 #include "header.h"
 
 static int gutter_width = 0;
+static void display_utf8(buffer_t *, int);
 
 static int num_digits(int n)
 {
@@ -158,7 +159,6 @@ void display(window_t *wp, int flag)
 	set_parse_state(bp, bp->b_epage); /* are we in a multline comment ? */
 
 	line_no = page_line;
-	at_new_lline = 1;
 	on_cursor_line = (line_no == cursor_line);
 	print_gutter(i, line_no, cursor_line, gutter_w, 1);
 
@@ -194,7 +194,7 @@ void display(window_t *wp, int flag)
 					attrset(A_REVERSE);
 				else if (on_cursor_line)
 					attrset(COLOR_PAIR(ID_CURSOR_LINE));
-				display_utf8(bp, *p, nch);
+				display_utf8(bp, nch);
 				if (in_region || on_cursor_line)
 					attrset(A_NORMAL);
 				j += w;
@@ -278,7 +278,7 @@ void display(window_t *wp, int flag)
 	attrset(A_NORMAL);
 }
 
-void display_utf8(buffer_t *bp, char_t c, int n)
+static void display_utf8(buffer_t *bp, int n)
 {
 	char sbuf[6];
 	int i = 0;

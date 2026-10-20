@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void fatal(char *fmt)
+_Noreturn void fatal(char *fmt)
 {
 	if (curscr != NULL) {
 		move(LINES-1, 0);

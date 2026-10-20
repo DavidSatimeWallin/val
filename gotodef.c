@@ -93,7 +93,7 @@ static void search_definitions(const char *word)
 
 		flen = colon1 - p;
 		if (flen >= NAME_MAX) flen = NAME_MAX;
-		strncpy(results[nresults].file, p, flen);
+		memcpy(results[nresults].file, p, flen);
 		results[nresults].file[flen] = '\0';
 
 		results[nresults].line_no = atoi(colon1 + 1);

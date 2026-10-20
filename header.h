@@ -115,14 +115,13 @@ extern keymap_t *key_map;       /* Command key mappings. */
 extern keymap_t keymap[];
 extern keymap_t *key_return;    /* Command key return */
 
-extern void fatal(char *);
+extern _Noreturn void fatal(char *);
 extern void msg(char *, ...);
 extern void display(window_t *, int);
 extern void dispmsg(void);
 extern void modeline(window_t *);
 extern int utf8_size(char_t);
 extern int prev_utf8_char_size(void);
-extern void display_utf8(buffer_t *, char_t, int);
 extern point_t lnstart(buffer_t *, point_t);
 extern point_t lncolumn(buffer_t *, point_t, int);
 extern point_t segstart(buffer_t *, point_t, point_t);
@@ -142,7 +141,6 @@ extern int save(char *);
 extern int load_file(char *);
 extern int insert_file(char *, int);
 extern void backsp(void);
-extern void block(void);
 extern void iblock(void);
 extern void deactivate_mark(void);
 extern void bottom(void);
@@ -159,7 +157,6 @@ extern void lnend(void);
 extern void paste(void);
 extern void pgdown(void);
 extern void pgup(void);
-extern void quit(void);
 extern int yesno(int);
 extern void quit_ask(void);
 extern void redraw(void);

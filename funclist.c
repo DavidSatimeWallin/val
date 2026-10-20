@@ -75,8 +75,7 @@ static void add_func(int line_no, const char *text)
 {
 	if (nfuncs >= MAX_FUNCS) return;
 	funcs[nfuncs].line_no = line_no;
-	strncpy(funcs[nfuncs].text, text, MAX_LINE_LEN - 1);
-	funcs[nfuncs].text[MAX_LINE_LEN - 1] = '\0';
+	snprintf(funcs[nfuncs].text, MAX_LINE_LEN, "%s", text);
 	trim_tail(funcs[nfuncs].text);
 	nfuncs++;
 }

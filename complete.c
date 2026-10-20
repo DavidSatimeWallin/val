@@ -22,9 +22,12 @@ int getfilename(char *prompt, char *buf, int nbuf)
 		case 0x0a: /* cr, lf */
 		case 0x0d:
 			if (cpos > 0 && NULL != strchr(buf, '~')) goto do_tab;
+			if (fp != NULL) fclose(fp);
+			return cpos > 0;
+
 		case 0x07: /* ctrl-g, abort */
 			if (fp != NULL) fclose(fp);
-			return (k != 0x07 && cpos > 0);
+			return FALSE;
 
 		case 0x7f: /* del, erase */
 		case 0x08: /* backspace */
@@ -62,7 +65,6 @@ do_tab:
 
 			buf[cpos] = '\0';
 			if (c != ' ') rewind(fp);
-			didtry = 1;
 			break;
 
 		default:

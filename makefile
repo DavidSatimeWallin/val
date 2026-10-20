@@ -6,31 +6,25 @@
 # Public Domain 1991, 1993 by Anthony Howe.  No warranty.
 #
 
-CC      = cc
-CFLAGS  = -O -Wall
+CC      ?= cc
+CFLAGS  ?= -O -Wall
+LDLIBS  ?= -lncursesw
 
-LD      = cc
-LDFLAGS =
-LIBS    = -lncursesw
+OBJ = command.o display.o gap.o key.o search.o buffer.o replace.o window.o \
+      complete.o hilite.o funclist.o gotodef.o diff.o help.o menu.o undo.o main.o
 
-CP      = cp
-MV      = mv
-RM      = rm
+.PHONY: all clean install
+all: val
 
-E       =
-O       = .o
-
-OBJ     = command$(O) display$(O) gap$(O) key$(O) search$(O) buffer$(O) replace$(O) window$(O) complete$(O) hilite$(O) funclist$(O) gotodef$(O) diff$(O) help$(O) menu$(O) undo$(O) main$(O)
-
-val$(E) : $(OBJ)
-	$(LD) $(LDFLAGS) -o val$(E) $(OBJ) $(LIBS)
+val: $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 %.o: %.c header.h
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 clean:
-	-$(RM) $(OBJ) val$(E)
+	rm -f $(OBJ) val
 
-install:
-	-$(MV) val$(E) /usr/local/bin/
+install: val
+	install -m 755 val /usr/local/bin/val
 

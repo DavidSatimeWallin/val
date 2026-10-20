@@ -81,7 +81,7 @@ keymap_t keymap[] = {
 char_t *get_key(keymap_t *keys, keymap_t **key_return)
 {
 	keymap_t *k;
-	int submatch;
+	int submatch = 0;
 	static char_t buffer[K_BUFFER_LENGTH];
 	static char_t *record = buffer;
 

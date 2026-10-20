@@ -1,7 +1,6 @@
 /* diff.c, Git diff functionality, Val Emacs */
 
 #include "header.h"
-#include <stdlib.h>
 
 #define DIFF_BUF     65536
 #define MAX_DIFF_LINES 5000
@@ -10,7 +9,6 @@ typedef struct {
     int offset;
     int len;
     int file_line;
-    int is_hunk_header;
     int line_type;
 } diff_line_t;
 
@@ -94,6 +92,19 @@ static void draw_diff_view(void)
     refresh();
 }
 
+static void move_diff_cursor(int delta)
+{
+    int next = cursor_pos + delta;
+
+    if (next < 0 || next >= diff_nlines) return;
+    cursor_pos = next;
+    if (cursor_pos < view_start)
+        view_start = cursor_pos;
+    else if (cursor_pos >= view_start + LINES - 3)
+        view_start = cursor_pos - LINES + 4;
+    draw_diff_view();
+}
+
 static void parse_diff_lines(void)
 {
     diff_nlines = 0;
@@ -107,13 +118,11 @@ static void parse_diff_lines(void)
             diff_lines[diff_nlines].offset = line_start;
             diff_lines[diff_nlines].len = len;
             diff_lines[diff_nlines].file_line = 0;
-            diff_lines[diff_nlines].is_hunk_header = 0;
             diff_lines[diff_nlines].line_type = LINE_NORMAL;
 
             char *line = diff_output + line_start;
             if (line[0] == '@') {
                 diff_lines[diff_nlines].line_type = LINE_HUNK;
-                diff_lines[diff_nlines].is_hunk_header = 1;
             } else if (line[0] == '+' && line[1] != '+') {
                 diff_lines[diff_nlines].line_type = LINE_ADD;
             } else if (line[0] == '-' && line[1] != '-') {
@@ -250,20 +259,10 @@ void show_git_diff(void)
             }
             if (c2 == 0x5b) {
                 int c3 = getch();
-                if (c3 == 0x41) {
-                    if (cursor_pos > 0) {
-                        cursor_pos--;
-                        if (cursor_pos < view_start) view_start = cursor_pos;
-                        draw_diff_view();
-                    }
-                } else if (c3 == 0x42) {
-                    if (cursor_pos < diff_nlines - 1) {
-                        cursor_pos++;
-                        if (cursor_pos >= view_start + LINES - 3) view_start = cursor_pos - LINES + 4;
-                        if (view_start < 0) view_start = 0;
-                        draw_diff_view();
-                    }
-                }
+                if (c3 == 0x41)
+                    move_diff_cursor(-1);
+                else if (c3 == 0x42)
+                    move_diff_cursor(1);
             }
             continue;
         }
@@ -280,21 +279,12 @@ void show_git_diff(void)
         }
 
         if (c == 0x10) {
-            if (cursor_pos > 0) {
-                cursor_pos--;
-                if (cursor_pos < view_start) view_start = cursor_pos;
-                draw_diff_view();
-            }
+            move_diff_cursor(-1);
             continue;
         }
 
         if (c == 0x0e) {
-            if (cursor_pos < diff_nlines - 1) {
-                cursor_pos++;
-                if (cursor_pos >= view_start + LINES - 3) view_start = cursor_pos - LINES + 4;
-                if (view_start < 0) view_start = 0;
-                draw_diff_view();
-            }
+            move_diff_cursor(1);
             continue;
         }
     }

@@ -2,14 +2,12 @@
 
 #include "header.h"
 
-void quit() { done = 1; }
 void up() { curbp->b_point = lncolumn(curbp, upup(curbp, curbp->b_point),curbp->b_col); }
 void down() { curbp->b_point = lncolumn(curbp, dndn(curbp, curbp->b_point),curbp->b_col); }
 void lnbegin() { curbp->b_point = segstart(curbp, lnstart(curbp,curbp->b_point), curbp->b_point); }
 void version() { msg(VERSION); }
 void top() { curbp->b_point = 0; }
 void bottom() { curbp->b_point = pos(curbp, curbp->b_ebuf); if (curbp->b_epage < pos(curbp, curbp->b_ebuf)) curbp->b_reframe = 1;}
-void block() { curbp->b_mark = curbp->b_point; }
 void copy() { copy_cut(FALSE); }
 void cut() { copy_cut(TRUE); }
 void resize_terminal() { one_window(curwp); }
@@ -113,7 +111,7 @@ void quit_ask()
 		if (!yesno(FALSE))
 			return;
 	}
-	quit();
+	done = 1;
 }
 
 /* flag = default answer, FALSE=n, TRUE=y */
@@ -358,10 +356,10 @@ void savebuffer()
 
 void writefile()
 {
-	strncpy(temp, curbp->b_fname, NAME_MAX);
+	snprintf(temp, TEMPBUF, "%s", curbp->b_fname);
 	if (getinput("Write file: ", temp, NAME_MAX, F_NONE))
 		if (save(temp) == TRUE)
-			strncpy(curbp->b_fname, temp, NAME_MAX);
+			snprintf(curbp->b_fname, sizeof(curbp->b_fname), "%s", temp);
 }
 
 void killbuffer()
@@ -394,7 +392,7 @@ void killbuffer()
 
 void iblock()
 {
-	block();
+	curbp->b_mark = curbp->b_point;
 	msg("Mark set");
 }
 

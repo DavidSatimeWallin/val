@@ -72,12 +72,21 @@ int main(int argc, char **argv)
 		input = get_key(key_map, &key_return);
 
 		if (key_return != NULL) {
+			/* Suggestions belong to the preceding edit, not later commands. */
+			if (key_return->func != autocomplete)
+				autocomplete_clear();
 			(key_return->func)();
+			if (key_return->func == backsp)
+				autocomplete_update();
 		} else {
 			/* allow TAB and NEWLINE, otherwise any Control Char is 'Not bound' */
-			if (*input > 31 || *input == 10 || *input == 9)
+			if (*input == 9 && autocomplete_accept())
+				continue;
+			autocomplete_clear();
+			if (*input > 31 || *input == 10 || *input == 9) {
 				insert();
-                        else {
+				autocomplete_update();
+			} else {
 				flushinp(); /* discard without writing in buffer */
 				msg("Not bound");
 			}

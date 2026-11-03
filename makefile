@@ -14,9 +14,9 @@ LDLIBS  ?= -lncursesw
 
 # Keep the complete link set explicit: adding a module requires one obvious edit.
 OBJ = command.o display.o gap.o key.o search.o buffer.o replace.o window.o \
-      complete.o hilite.o funclist.o gotodef.o diff.o help.o menu.o undo.o main.o
+      complete.o autocomplete.o hilite.o funclist.o gotodef.o diff.o help.o menu.o undo.o main.o
 
-.PHONY: all clean install
+.PHONY: all clean install test
 all: val
 
 val: $(OBJ)
@@ -27,7 +27,13 @@ val: $(OBJ)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 clean:
-	rm -f $(OBJ) val
+	rm -f $(OBJ) val tests/autocomplete-test
+
+tests/autocomplete-test: tests/autocomplete.c autocomplete.c gap.c undo.c header.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/autocomplete.c gap.c undo.c $(LDLIBS)
+
+test: tests/autocomplete-test
+	./tests/autocomplete-test
 
 # Copy rather than move val so the local build remains available after install.
 install: val

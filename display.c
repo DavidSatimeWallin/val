@@ -129,6 +129,23 @@ static void print_gutter(int row, int line_no, int cursor_line, int gutter_w, in
 		mvprintw(row, 0, "%*s ", gutter_w - 1, "");
 }
 
+/* Insert ghost text into this screen row only; document coordinates stay put. */
+static void display_completion(window_t *wp, int gutter_w)
+{
+	buffer_t *bp = wp->w_bufp;
+	if (wp != curwp)
+		return;
+	const char *suffix = autocomplete_suffix(bp);
+	int col = bp->b_col + gutter_w;
+	if (!*suffix || bp->b_row < wp->w_top ||
+	    bp->b_row >= wp->w_top + wp->w_rows || col >= COLS)
+		return;
+	/* Clip at the right edge instead of wrapping into another line/window. */
+	attrset(A_DIM | COLOR_PAIR(ID_CURSOR_LINE));
+	mvinsnstr(bp->b_row, col, suffix, COLS - col);
+	attrset(A_NORMAL);
+}
+
 /*
  * Paint one window.  flag requests message-line output and a final refresh;
  * multi-window updates defer those operations until every view is coherent.
@@ -294,6 +311,7 @@ void display(window_t *wp, int flag)
 
 	b2w(wp); /* save buffer stuff on window */
 	modeline(wp);
+	display_completion(wp, gutter_w);
 	if (wp == curwp && flag) {
 		dispmsg();
 		move(bp->b_row, bp->b_col + gutter_w); /* set cursor, offset past gutter */

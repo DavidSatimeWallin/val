@@ -21,6 +21,7 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Relative line numbers** -- gutter shows absolute line number on the current line and relative distances on all others
 - **UTF-8 support** -- edit files containing multi-byte and wide characters
 - **Filename completion** -- tab-complete file paths at prompts
+- **Go and V completion** -- automatic inline suggestions for keywords, common builtins, and identifiers from open buffers; Tab accepts
 - **fzf integration** -- fuzzy-find and open files with `M-.` (requires `/usr/bin/fzf`)
 - **Shell commands** -- run a shell command and view its output with `M--`
 - **Git diff viewer** -- browse git diff output with keyboard navigation using `M-d`
@@ -71,6 +72,8 @@ module responsibilities and non-obvious invariants directly beside the code.
 
 	C-_ / C-x u      undo
 	M-_              redo
+	Tab              accept inline completion (otherwise insert a tab)
+	M-/              cycle inline completions
 	C-d / Del        delete character under cursor
 	C-h / Backspace  delete character to the left
 	C-k              kill to end of line
@@ -119,3 +122,29 @@ module responsibilities and non-obvious invariants directly beside the code.
     C-l              refresh display
     M-M              show version
     C-x C-c          exit (prompts if unsaved buffers exist)
+
+## Go and V completion
+
+In a `.go` or `.v` file, suggestions appear automatically as dim text at the
+cursor after typing two identifier characters. Keep typing to refine the
+suggestion, press Tab to accept, or use `M-/` (Alt+/, or Esc then /) to cycle
+alternatives. The Edit menu also offers Next Completion. Backspace updates the
+suggestion; `C-g`, movement, and other commands dismiss it. Enter inserts a
+newline. Tab inserts a tab when there is no suggestion.
+
+Suggestions only affect the display until accepted; they do not modify the
+buffer, its saved contents, or undo history. The preview shifts following text
+on the current screen row and clips at the right edge without wrapping.
+
+Completion uses keywords, common builtins, and words from open files with the
+same extension, including unsaved edits. Matching is case-sensitive and works
+at the end of ASCII identifiers, up to 127 bytes. Up to 256 unique matches are
+available, in alphabetical order. Longer words and identifiers containing
+non-ASCII characters are skipped.
+
+This is lexical completion: words in comments and strings can appear, and
+suggestions are not filtered by scope or receiver type. It does not load
+unopened project files, resolve imports, or add function arguments. Accepted
+text participates in normal undo/redo and is inserted even in overwrite mode.
+
+Run completion tests with `make test`.

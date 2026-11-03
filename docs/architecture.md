@@ -40,6 +40,7 @@ terminates the process for failures that make editing impossible.
 - `gotodef.c`: grep-based project definition search.
 - `diff.c`: modal Git diff viewer.
 - `complete.c`: filename input and completion.
+- `autocomplete.c`: automatic Go/V inline suggestions and acceptance.
 - `help.c`: keyboard-reference buffer generated from the live keymap.
 
 ## Text and the gap buffer
@@ -108,6 +109,13 @@ call.
 
 `keymap[]` is also the source of keyboard help. A new binding should include an
 accurate human-readable description because `help.c` displays it verbatim.
+
+After typing or backspacing, `autocomplete_update()` builds display-only
+suggestions for the current buffer and point. The renderer inserts the dim
+suffix into the screen row without changing document coordinates or contents.
+Tab accepts a pending suggestion through the normal gap-buffer and undo paths;
+other commands clear it before executing, so prompts, buffer switches, and
+buffer deletion cannot retain stale suggestions. `M-/` cycles candidates.
 
 ## Display
 

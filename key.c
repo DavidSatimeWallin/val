@@ -44,6 +44,7 @@ keymap_t keymap[] = {
 	{"esc . fzf-find-file     ", "\x1B\x2E", fzf_find_file },
 	{"esc - shell-command     ", "\x1B\x2D", shell_cmd },
 	{"esc , goto-definition   ", "\x1B\x2C", gotodef },
+	{"esc / next-completion   ", "\x1B\x2F", autocomplete },
 	{"C-x C-s save-buffer      ", "\x18\x13", savebuffer },  
 	{"C-x C-w write-file       ", "\x18\x17", writefile },  /* write and prompt for name */
 	{"C-x C-c exit             ", "\x18\x03", quit_ask },

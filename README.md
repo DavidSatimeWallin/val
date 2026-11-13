@@ -1,6 +1,7 @@
 # Val
 
-A tiny terminal text editor with Emacs-style key bindings.
+A small terminal text editor written in C with Emacs-style key bindings,
+undo/redo, multiple buffers and windows, Go/V inline completion, and Git tools.
 
 Originally based on [Atto](https://github.com/hughbarney/atto) by Hugh Barney, which itself derives from Anthony Howe's public domain editor. Val Emacs is maintained by David Satime Wallin.
 
@@ -10,12 +11,12 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 
 ## Features
 
-- **Menu bar** -- interactive top menu with all keyboard shortcuts (F10 or `C-x m`)
+- **Menu bar** -- keyboard-driven access to common commands (F10 or `C-x m`)
 - **Multiple buffers** -- open, switch between, and close files independently
 - **Multiple windows** -- split the screen and view different buffers (or the same buffer) side by side
 - **Visual region highlighting** -- the selected region is displayed in reverse video, giving clear visual feedback when the mark is active
 - **Cut, copy, and paste** -- mark a region, cut or copy it, and yank it back anywhere
-- **Search** -- incremental forward and backward search with wrap-around
+- **Search** -- forward and backward text search with wrap-around
 - **Search and replace** -- interactive query-replace
 - **Syntax highlighting** -- comments starting with `//` or `/*` in column one displayed in bold blue (block comments continue through `*/`); function calls displayed in bold
 - **Relative line numbers** -- gutter shows absolute line number on the current line and relative distances on all others
@@ -24,9 +25,9 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Go and V completion** -- automatic inline suggestions for keywords, common builtins, and identifiers from open buffers; Tab accepts
 - **fzf integration** -- fuzzy-find and open files with `M-.` (requires `/usr/bin/fzf`)
 - **Shell commands** -- run a shell command and view its output with `M--`
-- **Git diff viewer** -- browse git diff output with keyboard navigation using `M-d`
+- **Git diff viewer** -- browse the current file's unstaged changes with `M-d`; Enter jumps to the selected source line
 - **Go to definition** -- jump to a C function definition with `M-,`
-- **Function list** -- browse and jump to functions in the current buffer with `M-l`
+- **Function list** -- filter and jump to functions in C/C++, Go, V, Python, Ruby, PHP, Zig, Crystal, and Rust files with `M-l`
 - **Jump command** -- jump to an absolute line or move up/down by a relative number of lines
 - **Overwrite mode** -- toggle between insert and overwrite with the Ins key
 - **Buffer-gap architecture** -- efficient internal representation that keeps the entire codebase small and fast
@@ -42,6 +43,15 @@ Then:
     make
     sudo make install
 
+Run `./val path/to/file` from the build directory, or `val path/to/file` after
+installing. Run without a filename to open a scratch buffer.
+
+## Tests
+
+Run `make test` for completion and syntax-highlighting regression tests. The
+highlighting tests cover comment boundaries, gaps between marker bytes, and
+parser state when scrolling into a comment.
+
 ## Developer Documentation
 
 See [`docs/architecture.md`](docs/architecture.md) for the module map, data
@@ -50,6 +60,9 @@ and guidance for adding commands safely. The source files also document their
 module responsibilities and non-obvious invariants directly beside the code.
 
 ## Key Bindings
+
+`C-` means Ctrl. `M-` means Alt, or press Esc followed by the key. For example,
+`M-/` is Alt+/ or Esc then /. Open the built-in reference with `C-x h`.
 
 ### Movement
 
@@ -67,6 +80,9 @@ module responsibilities and non-obvious invariants directly beside the code.
     M->              end of buffer
     M-g              go to line
     M-j              jump (absolute, relative up/down)
+
+Home and End accept common terminal variants, including the sequences ending
+in `1~`/`4~` and `7~`/`8~`. `C-a` and `C-e` provide the same movement.
 
 ### Editing
 
@@ -120,8 +136,21 @@ module responsibilities and non-obvious invariants directly beside the code.
 
     C-x =            show cursor position
     C-l              refresh display
-    M-M              show version
+    Esc Esc          show version
     C-x C-c          exit (prompts if unsaved buffers exist)
+
+## Highlighting
+
+Comment highlighting starts only when `//` or `/*` is in column one, with no
+leading spaces or tabs. `//` continues to the end of the line; `/*` continues
+across lines until `*/`, including when scrolling into the middle of the block.
+Markers inside a line, such as those in URLs, strings, or trailing comments,
+do not start comment highlighting.
+
+Comments appear in bold blue and function-call names in bold. The current line
+has a cyan background; an active selection appears in reverse video. `C-Space`
+sets the mark, movement extends the selection, and `C-g` clears it. The modeline
+shows `R` while a nonempty region is active.
 
 ## Go and V completion
 
@@ -146,5 +175,3 @@ This is lexical completion: words in comments and strings can appear, and
 suggestions are not filtered by scope or receiver type. It does not load
 unopened project files, resolve imports, or add function arguments. Accepted
 text participates in normal undo/redo and is inserted even in overwrite mode.
-
-Run completion and syntax-highlighting tests with `make test`.

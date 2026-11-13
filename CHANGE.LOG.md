@@ -1,5 +1,15 @@
 # Val Emacs Change Log
 
+## Unreleased
+* added automatic inline completion for Go and V: Tab accepts, M-/ cycles,
+  and candidates include keywords, builtins, and identifiers in open buffers
+* restricted comment openers (`//` and `/*`) to column one, preserving
+  multiline block comments and parser state when scrolling
+* added Home/End terminal variants (`1~`/`4~` and `7~`/`8~`)
+* fixed UTF-8 input/rendering and current-line highlighting after scrolling
+* added completion and syntax-highlighting regression tests (`make test`)
+* documented editor architecture and refreshed the README and built-in help
+
 ## Val v2.4.0 12 Jun 2026
 * added visual region highlighting -- the mark/region is now displayed in
   reverse video, making the selected text visible on screen

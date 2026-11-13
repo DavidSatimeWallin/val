@@ -101,6 +101,10 @@ Most terminals send command keys as byte escape sequences. `get_key()` compares
 recorded bytes with `keymap[]` until it finds an exact command, a possible
 prefix, or ordinary text.
 
+Home and End map their common terminal variants to `lnbegin()` and `lnend()`:
+`ESC O H` / `ESC O F`, `ESC [ H` / `ESC [ F`, `ESC [ 1 ~` / `ESC [ 4 ~`,
+and `ESC [ 7 ~` / `ESC [ 8 ~`.
+
 UTF-8 input also arrives as multiple bytes. `get_key()` collects all continuation
 bytes before returning text to `insert()`. This is important: rendering between
 individual bytes would expose an invalid partial sequence to ncurses. The input
@@ -109,6 +113,8 @@ call.
 
 `keymap[]` is also the source of keyboard help. A new binding should include an
 accurate human-readable description because `help.c` displays it verbatim.
+Identical descriptions for terminal variants appear once in the reference;
+usage notes also explain completion, highlighting, and selection.
 
 After typing or backspacing, `autocomplete_update()` builds display-only
 suggestions for the current buffer and point. The renderer inserts the dim
@@ -132,6 +138,13 @@ placement must use cell widths, while traversal must use byte lengths.
 In a multi-window layout it delays the final refresh until all views are
 coherent. Commands should normally mutate state and return rather than adding
 new refresh calls.
+
+Comment openers (`//` and `/*`) are recognized only at logical column one:
+byte offset zero or immediately after a newline, without leading whitespace.
+Line comments end at the newline; block comments continue until `*/`.
+`set_parse_state()` replays bytes before the visible page so scrolling preserves
+the same state as parsing from the start of the buffer. Highlighting state is
+owned by each buffer, and marker detection uses logical offsets across the gap.
 
 ## Undo and redo
 
@@ -168,6 +181,7 @@ Recommended verification:
 ```sh
 make clean
 make CFLAGS='-O2 -Wall -Wextra -Wpedantic'
+make test
 scan-build --status-bugs make clean all
 ```
 

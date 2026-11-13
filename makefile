@@ -27,13 +27,17 @@ val: $(OBJ)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 clean:
-	rm -f $(OBJ) val tests/autocomplete-test
+	rm -f $(OBJ) val tests/autocomplete-test tests/hilite-test
 
 tests/autocomplete-test: tests/autocomplete.c autocomplete.c gap.c undo.c header.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/autocomplete.c gap.c undo.c $(LDLIBS)
 
-test: tests/autocomplete-test
+tests/hilite-test: tests/hilite.c hilite.c gap.c header.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/hilite.c hilite.c gap.c $(LDLIBS)
+
+test: tests/autocomplete-test tests/hilite-test
 	./tests/autocomplete-test
+	./tests/hilite-test
 
 # Copy rather than move val so the local build remains available after install.
 install: val

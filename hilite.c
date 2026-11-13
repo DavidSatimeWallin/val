@@ -41,9 +41,10 @@ int parse_text(buffer_t *bp, point_t pt)
 
 	char_t c_now = get_at(bp, pt);
 	char_t c_next = get_at(bp, pt + 1);
+	int at_line_start = (pt == 0 || get_at(bp, pt - 1) == '\n');
 	bp->b_h_state = bp->b_h_next_state;
 
-	if (bp->b_h_state == ID_DEFAULT && c_now == '/' && c_next == '*') {
+	if (bp->b_h_state == ID_DEFAULT && at_line_start && c_now == '/' && c_next == '*') {
 		bp->b_h_skip_count = 1;
 		bp->b_h_next_state = bp->b_h_state = STATE_BLOCK_COMMENT;
 		return ID_COMMENT;
@@ -53,7 +54,7 @@ int parse_text(buffer_t *bp, point_t pt)
 		bp->b_h_next_state = ID_DEFAULT;
 		return ID_COMMENT;
 	}
-	if (bp->b_h_state == ID_DEFAULT && c_now == '/' && c_next == '/') {
+	if (bp->b_h_state == ID_DEFAULT && at_line_start && c_now == '/' && c_next == '/') {
 		bp->b_h_skip_count = 1;
 		bp->b_h_next_state = bp->b_h_state = STATE_LINE_COMMENT;
 		return ID_COMMENT;

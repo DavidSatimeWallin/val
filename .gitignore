@@ -1,6 +1,7 @@
 *.o
 val
 tests/autocomplete-test
+tests/hilite-test
 debug.out
 
 # Local terminal/UTF-8 diagnostic artifacts.

@@ -17,7 +17,7 @@ This software is provided as-is, with no warranty of any kind. Use this editor a
 - **Cut, copy, and paste** -- mark a region, cut or copy it, and yank it back anywhere
 - **Search** -- incremental forward and backward search with wrap-around
 - **Search and replace** -- interactive query-replace
-- **Syntax highlighting** -- `//` and `/* */` comments displayed in bold blue; function calls displayed in bold
+- **Syntax highlighting** -- comments starting with `//` or `/*` in column one displayed in bold blue (block comments continue through `*/`); function calls displayed in bold
 - **Relative line numbers** -- gutter shows absolute line number on the current line and relative distances on all others
 - **UTF-8 support** -- edit files containing multi-byte and wide characters
 - **Filename completion** -- tab-complete file paths at prompts
@@ -147,4 +147,4 @@ suggestions are not filtered by scope or receiver type. It does not load
 unopened project files, resolve imports, or add function arguments. Accepted
 text participates in normal undo/redo and is inserted even in overwrite mode.
 
-Run completion tests with `make test`.
+Run completion and syntax-highlighting tests with `make test`.

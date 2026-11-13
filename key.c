@@ -78,6 +78,10 @@ keymap_t keymap[] = {
 	{"end end-of-line          ", "\x1B\x4F\x46", lnend },
 	{"home beginning-of-line   ", "\x1B\x5B\x48", lnbegin },
 	{"end end-of-line          ", "\x1B\x5B\x46", lnend },
+	{"home beginning-of-line   ", "\x1B[1~", lnbegin },
+	{"end end-of-line          ", "\x1B[4~", lnend },
+	{"home beginning-of-line   ", "\x1B[7~", lnbegin },
+	{"end end-of-line          ", "\x1B[8~", lnend },
 	{"pgup backward-page       ", "\x1B\x5B\x35\x7E",pgup }, /* PgUp key */
 	{"pgdn forward-page        ", "\x1B\x5B\x36\x7E", pgdown }, /* PgDn key */
 	{"resize resize-terminal   ", "\x9A",     resize_terminal },
